@@ -1,0 +1,58 @@
+.teachers {
+    &__cards {
+        gap: 20px;
+        margin-bottom: 20px;
+
+        &__details {
+            position: relative;
+            width: 260px;
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+
+            &__name {
+                font-size: 20px;
+            }
+
+            &__count {
+                font-size: 14px;
+                opacity: 0.9;
+            }
+
+            &.selected::after {
+                content: "";
+                position: absolute;
+                bottom: -12px;
+                left: 15%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-left: 12px solid transparent;
+                border-right: 12px solid transparent;
+                border-top: 12px solid var(--card-color);
+            }
+
+            --card-color: var(--text-color);
+            padding: 16px;
+            color: var(--text-color);
+            background: linear-gradient(135deg,
+                color-mix(in srgb, var(--card-color) 88%, var(--text-color)),
+                color-mix(in srgb, var(--card-color) 88%, black));
+            box-shadow: 0 10px 20px color-mix(in srgb, var(--card-color) 45%, transparent);
+            transition: transform 0.25s ease,
+            box-shadow 0.25s ease;
+        }
+
+        &__action {
+            &__arrow {
+                background-color: var(--text-color);
+                color: var(--primary-color);
+                padding: 5px;
+                border-radius: 50%;
+                border: none;
+                outline: none;
+            }
+        }
+    }
+}

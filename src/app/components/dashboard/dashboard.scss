@@ -1,0 +1,203 @@
+.dashboard {
+
+    &__details {
+        gap: 35px;
+
+        &__card {
+            padding: 20px;
+            width: 360px;
+            border-radius: 15px;
+
+            --card-color: var(--text-color);
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-color);
+            background: linear-gradient(135deg,
+                color-mix(in srgb, var(--card-color) 88%, var(--text-color)),
+                color-mix(in srgb, var(--card-color) 88%, black));
+            box-shadow: 0 10px 20px color-mix(in srgb, var(--card-color) 45%, transparent);
+            transition: transform 0.25s ease,
+            box-shadow 0.25s ease;
+
+            &__image {
+                width: 100px;
+            }
+
+            &__content {
+                padding-top: 30px;
+                gap: 15px;
+                align-items: flex-end;
+
+                &__count {
+                    font-size: 40px;
+                    font-weight: 500;
+                    line-height: 1;
+                }
+
+                &__title {
+                    font-size: 15px;
+                }
+            }
+        }
+    }
+
+    &__timetable {
+        width: 100%;
+
+        &__heading {
+            margin-top: 40px;
+
+            &__title {
+                font-weight: 600;
+                font-size: 22px;
+            }
+
+            &__date {
+                border: 1px solid var(--primary-color);
+                background-color: #D8E7E2;
+                border-radius: 25px;
+                padding: 4px 8px;
+            }
+        }
+
+        &__routine {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            &__table {
+                width: 100%;
+                border-collapse: separate;
+                margin: 10px;
+                text-align: center;
+
+                &__head {
+                    background-color: var(--text-color);
+                    border-top-left-radius: 20px;
+                    border-bottom-left-radius: 20px;
+                    border-top-right-radius: 20px;
+                    padding: 6px 0;
+                    color: #808080;
+                }
+
+                thead {
+                    th {
+                        position: sticky;
+                        top: 0;
+                        background: var(--background-color);
+                        padding: 10px;
+                        font-weight: 600;
+                        font-size: 18px;
+                    }
+
+                    tr {
+                        background: var(--background-color);
+                    }
+                }
+
+                tbody {
+                    td {
+                        width: 50px;
+                        padding: 12px 8px;
+                        font-weight: 600;
+                        border: 1px solid var(--background-color);
+                        font-size: 18px;
+
+                        .teacher-info {
+                            .title {
+                                color: #808080c4;
+                                font-size: 12px;
+                            }
+
+                            img {
+                                margin-left: 10px;
+                                width: 25px;
+                                height: 25px;
+                                border-radius: 50%;
+                                border: 1px solid var(--background-color);
+                            }
+
+                        }
+                    }
+
+                    tr:last-child td {
+                        border-bottom: none;
+                    }
+
+                    tr {
+                        background: var(--text-color);
+
+                        td:first-child {
+                            border-left: 10px solid var(--primary-color);
+                            border-top-left-radius: 8px;
+                            border-bottom-left-radius: 8px;
+                            font-size: 25px;
+                            font-weight: 600;
+                            color: #3e3eb5f2;
+                        }
+
+                        td:nth-of-type(even) {
+                            color: #F17404;
+                        }
+
+                        td:nth-of-type(odd) {
+                            color: #695845;
+                        }
+                    }
+                }
+            }
+
+            &__table:before {
+                line-height: 1em;
+                content: ".";
+                color: white;
+                display: block;
+            }
+        }
+
+
+    }
+}
+
+.admin {
+    flex: 1;
+
+    &__chart {
+        max-width: 500px;
+        padding: 0;
+    }
+
+    &__card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: var(--text-color);
+        padding: 18px 22px;
+        border-radius: 14px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+        &__avatar {
+            img {
+                width: 70px;
+                height: auto;
+            }
+        }
+
+        &__content {
+            h3 {
+                margin: 0;
+                font-size: 18px;
+                color: #ff7a00;
+                font-weight: 600;
+            }
+
+            p {
+                margin: 4px 0 0;
+                font-size: 13px;
+                color: #9aa0a6;
+            }
+        }
+    }
+
+}

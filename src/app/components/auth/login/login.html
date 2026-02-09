@@ -1,0 +1,27 @@
+<div class="login-page d-flex">
+
+  <div class="left-section">
+    <img src="/assets/login-page.png" alt="login-page-image" />
+  </div>
+
+  <div class="right-section d-flex justify-content-center">
+
+    <div class="w-50 d-flex flex-column justify-content-center">
+
+      <h2 class="text-color text-center">Welcome</h2>
+      <p class="text-color text-center">Sign in to your admin account</p>
+      <label class="text-color mt-5">Email*</label>
+      <input placeholder="Enter your email" required>
+
+      <label class="text-color mt-4">Password*</label>
+      <input placeholder="Enter your Password" required>
+
+      <div class="forgot text-end">Forgot your password</div>
+
+      <app-button [buttonData]="buttonData" (buttonHandler)="handleButtonClick($event)"></app-button>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,76 @@
+.left-bar {
+	border-radius: 0 16px 16px 0;
+	height: 100vh;
+
+	.icon-bar {
+		width: 70px;
+		background: #0ea57a;
+		align-items: center;
+
+		.middle-icon-list {
+			margin-top: 80px;
+		}
+
+		i {
+			color: var(--text-color);
+			font-size: 20px;
+			padding-top: 30px;
+			cursor: pointer;
+		}
+
+		.bottom-icon {
+			margin-bottom: 50px;
+			margin-top: auto;
+		}
+	}
+
+	.text-bar {
+		width: 0;
+		background: #12b886;
+		overflow: hidden;
+		transition: width 0.3s ease;
+		border-top-right-radius: 30px;
+		border-bottom-right-radius: 30px;
+
+		.school-name {
+			height: 15%;
+			font-size: 2rem;
+		}
+
+		ul {
+			margin-bottom: auto;
+			list-style-type: none;
+			margin-left: 0;
+			padding-left: 20px;
+
+			li {
+				cursor: pointer;
+				padding: 12px 0;
+				padding-left: 12px;
+			}
+		}
+
+		.bottom-text {
+			margin-bottom: 40px;
+		}
+
+		.text-list {
+			margin-top: 10px;
+		}
+
+		.text-list li.active {
+			border-top-left-radius: 25px;
+			border-bottom-left-radius: 25px;
+			background-color: var(--background-color);
+
+		}
+
+		.text-list li.active a {
+			color: var(--primary-color);
+		}
+	}
+
+	.text-bar.open {
+		width: 200px;
+	}
+}

@@ -1,0 +1,77 @@
+.classes {
+    gap: 35px;
+    flex-wrap: wrap;
+
+    &__card {
+        --card-color: var(--text-color);
+        padding: 16px;
+        color: var(--text-color);
+        background: linear-gradient(135deg,
+                color-mix(in srgb, var(--card-color) 88%, var(--text-color)),
+                color-mix(in srgb, var(--card-color) 88%, black));
+        box-shadow: 0 10px 20px color-mix(in srgb, var(--card-color) 45%, transparent);
+        transition: transform 0.25s ease,
+            box-shadow 0.25s ease;
+        padding: 25px;
+        width: 20%;
+        border-radius: 15px;
+
+        &__header {
+            &__title {
+                margin: 0;
+                font-size: 30px;
+                font-weight: 600;
+            }
+
+            &__count {
+                margin: 4px 0 0;
+                font-size: 13px;
+                opacity: 0.9;
+                font-weight: 550;
+            }
+
+            &__badge {
+                background: rgba(255, 255, 255, 0.2);
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                font-size: 20px;
+                font-weight: 700;
+            }
+        }
+
+        &__footer {
+            margin-top: 25px;
+
+            &__student {
+
+                &__image {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    border: 2px solid var(--text-color);
+                    margin-left: -8px;
+                }
+
+                &__more {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    border: 2px solid var(--text-color);
+                    margin-left: -8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    background-color: var(--text-color);
+                }
+            }
+
+            &__student img:first-child {
+                margin-left: 0;
+            }
+
+        }
+
+    }
+}

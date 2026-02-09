@@ -1,0 +1,44 @@
+<nav class="left-bar d-flex">
+
+	<!-- icon  -->
+	<div class="icon-bar d-flex flex-column">
+
+		<div class="top-icon">
+			<i class="fa-solid fa-bars" (click)="toggleSidebar()"></i>
+		</div>
+
+		<div class="middle-icon-list d-flex flex-column">
+			<i class="fa-etch fa-solid fa-gauge"></i>
+			<i class="fa-solid fa-chalkboard-user"></i>
+			<i class="fa-solid fa-users"></i>
+			<i class="fa-solid fa-school"></i>
+			<i class="fa-solid fa-book"></i>
+		</div>
+
+		<div class="bottom-icon">
+			<i class="fa-solid fa-cog"></i>
+		</div>
+
+	</div>
+
+	<div class="text-bar d-flex flex-column" [class.open]="isSidebarOpen">
+
+		<div class="school-name text-color d-flex justify-content-center align-items-center">School.ai
+		</div>
+
+		<ul class="d-flex flex-column text-list">
+			@for(module of moduleList;track module){
+			<li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+				<a class="text-color simple-link" [routerLink]="module.path">{{module.name}}</a>
+			</li>
+			}
+		</ul>
+
+		<ul class="bottom-text">
+			<li>
+				<a class="text-color simple-link">Log out</a>
+			</li>
+		</ul>
+	</div>
+
+</nav>

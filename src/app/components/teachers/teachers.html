@@ -1,0 +1,33 @@
+<div class="teachers">
+
+    <div class="teachers__cards d-flex">
+        <div class="d-flex justify-content-between w-100">
+            <div class="d-flex gap-5">
+                @for(card of visibleCards(); track card.class_name; let i =$index) {
+                <div class="teachers__cards__details text-color"
+                    [style.--card-color]="getCardColor(startIndex + i)"
+                    [class.selected]="selectedClass === card.class_name"
+                    (click)="onCardClick(card.class_name)">
+                    <div class="teachers__cards__details__name">{{card.class_name}}</div>
+                    <div class="teachers__cards__details__count">{{card.count}} teachers</div>
+                </div>
+                }
+            </div>
+
+            <div class="teachers__cards__action d-flex flex-column justify-content-between">
+                <button class="teachers__cards__action__arrow" (click)="prev()" [disabled]="startIndex === 0">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button class="teachers__cards__action__arrow" (click)="next()"
+                    [disabled]="startIndex + cardsPerView >= teachers_classes.length">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="teachers__table mt-5">
+        <app-table [tableContent]="teachersDetails"></app-table>
+    </div>
+</div>

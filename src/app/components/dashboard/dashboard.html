@@ -1,0 +1,84 @@
+<!-- <div class="d-flex gap-5"> -->
+
+
+<div class="dashboard">
+	<div class="dashboard__details d-flex">
+
+		@for(item of dashboard_details; track item; let i=$index) {
+		<div class="dashboard__details__card" [style.--card-color]="getCardColor(i+1)">
+			<img [src]="item.img" class="dashboard__details__card__image">
+			<div class="dashboard__details__card__content d-flex text-color">
+				<div class="dashboard__details__card__content__count">{{item.count}}</div>
+				<div class="dashboard__details__card__content__title">{{item.title}}</div>
+			</div>
+		</div>
+		}
+	</div>
+
+	<div class="dashboard__timetable">
+
+		<div class="d-flex justify-content-between dashboard__timetable__heading">
+			<div class="dashboard__timetable__heading__title">
+				Class Routine
+			</div>
+			<div class="dashboard__timetable__heading__date primary-color">
+				{{todayDate | date:'MMMM d, yyyy'}}
+			</div>
+		</div>
+
+		<div class="dashboard__timetable__routine">
+			<table class="dashboard__timetable__routine__table">
+				<thead>
+					<tr>
+						@for(head of column; track head.key; let i = $index) {
+						<th>
+							<div class="dashboard__timetable__routine__table__head">
+								{{head.name}}
+							</div>
+						</th>
+						}
+					</tr>
+				</thead>
+
+				<tbody>
+					@for(row of dataSource; track row.class_name; let i= $index) {
+					<tr>
+						@for (col of column; track col.key) {
+						<td>
+							{{ col.key === 'class' ? row.class_name : row.time_table[col.key] }}
+
+							<div *ngIf="col.key !== 'class' && row.time_table[col.key] !== 'Break'"
+								class="teacher-info">
+								<span class="title">
+									{{ row.teacher_name }}
+								</span>
+								<img [src]="row.teacher_img">
+							</div>
+						</td>
+						}
+					</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- <div class="admin d-flex flex-column justify-content-between align-items-center">
+		<div class="admin__card">
+			<div class="admin__card__avatar">
+				<img [src]="admin_card.img" alt="User Illustration">
+			</div>
+
+			<div class="admin__card__content">
+				<h3>Welcome, {{admin_card.name}}</h3>
+				<p>Logged in as {{admin_card.role}}</p>
+			</div>
+		</div>
+		<div id="admin__chart">
+			<apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [labels]="chartOptions.labels"
+				[responsive]="chartOptions.responsive">
+			</apx-chart>
+		</div>
+	</div> -->
+<!-- </div> -->
