@@ -1,0 +1,90 @@
+@if(tableContent.title || tableContent.filters?.length || tableContent.button){
+<div class="table__header  align-items-center">
+
+  @if(tableContent.title) {
+  <div class="table__header__title">
+    <span class="table__header__title__sub-title">
+      {{tableContent.title}}
+    </span>
+    <span class="primary-color"> (30)</span>
+  </div>
+  }
+
+  <div class="table__filter d-flex justify-content-center">
+    @for(item of tableContent.filters; track item) {
+    <div class="table__filter__content d-flex align-items-center">
+      <span>{{item.label}}</span>
+      <input [type]="item.type" [maxLength]="item.maxLength" [placeholder]="item.placeholder">
+    </div>
+    }
+  </div>
+
+  @if(tableContent.button) {
+  <div class="table__add">
+    <app-button [buttonData]="tableContent.button" (buttonHandler)="handleButtonClick($event)"></app-button>
+
+  </div>
+  }
+</div>
+}
+
+<div class="common_table">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    @for (col of tableContent.column; track col.key) {
+    <ng-container [matColumnDef]="col.key">
+      <th mat-header-cell *matHeaderCellDef>
+        <b>{{ col.name }}</b>
+      </th>
+
+      <td mat-cell *matCellDef="let row">
+
+        @if(col.key=== 'status') {
+        <div class="status d-flex gap-2">
+          <div class="present" [class.active]="row[col.key] === 'Present'">P</div>
+          <div class="absent" [class.active]="row[col.key] === 'Absent'">A</div>
+          <div class="leave" [class.active]="row[col.key] === 'Leave'">L</div>
+        </div>
+        } @else {
+        {{ row[col.key] }}
+        }
+
+      </td>
+    </ng-container>
+    }
+
+    @if(tableContent.action?.length) {
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef>
+        <b>Action</b>
+      </th>
+
+      <td mat-cell *matCellDef="let row">
+
+        @for (action of tableContent.action; track action.name) {
+
+        @if (action.name === 'view') {
+
+        <button mat-button (click)="onView(row)" class="primary-color btn-action">
+          <i class="fa-regular fa-eye"></i>
+        </button>
+        }
+
+        }
+      </td>
+
+    </ng-container>
+    }
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let element; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+@if(tableContent.pagination) {
+<div class="pagination">
+  <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+  </mat-paginator>
+</div>
+}

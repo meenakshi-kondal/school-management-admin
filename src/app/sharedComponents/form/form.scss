@@ -1,0 +1,14 @@
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+label { font-weight: 600; margin-bottom: 6px; display: block; }
+h4 { margin-top: 24px; }
+button { margin-top: 20px; padding: 10px 20px; }

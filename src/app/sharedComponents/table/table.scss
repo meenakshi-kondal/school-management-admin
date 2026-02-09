@@ -1,0 +1,113 @@
+.mat-mdc-table {
+    background-color: var(--background-color);
+    border-collapse: separate;
+    border-spacing: 0 10px;
+
+    th {
+        position: sticky;
+        top: 0;
+
+    }
+
+    th,
+    td {
+        font-size: 16px;
+        border-bottom-width: 0;
+    }
+
+    tr {
+        background-color: var(--text-color);
+
+    }
+}
+
+.common_table {
+    margin: 20px 0;
+    max-height: 440px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.btn-action {
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+mat-paginator {
+    background-color: var(--background-color);
+}
+
+.pagination {
+    margin-top: 1rem;
+    float: right;
+}
+
+.status {
+
+    div {
+        border-radius: 50%;
+        padding: 5px 8px;
+        font-weight: 600;
+        border: 2px solid transparent;
+    }
+
+    .present {
+        --clr: var(--primary-color);
+    }
+
+    .absent {
+        --clr: var(--error-color);
+    }
+
+    .leave {
+        --clr: var(--secondary-color);
+    }
+
+    .present,
+    .absent,
+    .leave {
+        border-color: var(--clr);
+        color: var(--clr);
+
+        &.active {
+            background: var(--clr);
+            color: var(--text-color);
+        }
+    }
+}
+
+
+.table {
+    &__header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+
+        &__title {
+            &__sub-title {
+                font-size: 25px;
+                font-weight: 600;
+            }
+        }
+    }
+
+    &__filter {
+        gap: 15px;
+
+        &__content {
+            gap: 10px;
+
+            input {
+                padding: 5px 12px;
+                border-radius: 25px;
+                outline: none;
+                background: #E6E6E6;
+                border: 1px solid #d7d7d7;
+                width: 150px;
+
+            }
+        }
+    }
+
+
+}

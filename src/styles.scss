@@ -1,1 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
+@use "bootstrap/scss/bootstrap";
+
+:root {
+  --primary-color: var(--mat-sys-primary);
+  --secondary-color: #FFC107;
+  --error-color: #F44336;
+  --background-color: var(--mat-sys-background);
+  --text-color: #FFFFFF;
+  --secondary-background: #fff;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--background-color);
+  font-family: 'Poppins', sans-serif;
+}
+
+
+.text-color {
+  color: var(--text-color)
+}
+
+.simple-link {
+  text-decoration: none !important;
+}
+
+.primary-color {
+  color: var(--primary-color);
+}

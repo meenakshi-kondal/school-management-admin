@@ -1,0 +1,9 @@
+<button mat-raised-button class="w-100 btn-layout" [ngClass]="{
+    'btn-primary': buttonData.type === 'primary',
+    'btn-secondary': buttonData.type === 'secondary'
+    }" (click)="onClick()">
+    @if(buttonData.icon){
+    <span [innerHTML]="buttonData.icon"></span>
+    }
+    {{buttonData.value}}
+</button>
