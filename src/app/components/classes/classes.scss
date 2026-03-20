@@ -1,6 +1,9 @@
 .classes {
-    gap: 35px;
-    flex-wrap: wrap;
+
+    &__cards {
+        gap: 35px;
+        flex-wrap: wrap;
+    }
 
     &__card {
         --card-color: var(--text-color);
@@ -74,4 +77,7 @@
         }
 
     }
+}
+.pointer {
+    cursor: pointer;
 }

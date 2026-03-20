@@ -1,17 +1,21 @@
-import { Component, Input } from '@angular/core';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { TABLE } from '../../interfaces/common';
 import { Button } from '../button/button';
+import { NoData } from '../no-data/no-data';
 
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule, Button],
+  imports: [MatTableModule, MatPaginatorModule, Button, NoData],
   templateUrl: './table.html',
   styleUrl: './table.scss'
 })
-export class Table {
+export class Table implements OnChanges {
+
+  @Input() totalLength: number = 0;
+  @Output() paginationChange = new EventEmitter<PageEvent>();
 
   @Input() tableContent: TABLE = {
     title: '',
@@ -26,32 +30,49 @@ export class Table {
     path: '', // api path
     pagination: false,
     dataSource: []
+  };
 
-  }
   displayedColumns: string[] = [];
-  dataSource: any = [];
+  dataSource: any = new MatTableDataSource<any>([]);
 
-  ngOnChanges() {
+  constructor(private cdr: ChangeDetectorRef) {}
 
-    if (this.tableContent.column.length) {
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('Table ngOnChanges Triggered:', changes);
+    if (changes['tableContent'] || changes['totalLength']) {
+      this.updateTable();
+    }
+  }
 
-      this.displayedColumns = this.tableContent.column.map(col => col.key);
-      this.dataSource = this.tableContent.dataSource;
+  private updateTable() {
+    console.log('Table DataSource Updating with:', this.tableContent.dataSource);
+    if (this.tableContent && this.tableContent.column && this.tableContent.column.length) {
+      this.displayedColumns = this.tableContent.column.map((col: any) => col.key);
+      this.dataSource = new MatTableDataSource<any>(this.tableContent.dataSource || []);
+      
       if (this.tableContent.action?.length) {
-        this.displayedColumns.push('action');
+        if (!this.displayedColumns.includes('action')) {
+          this.displayedColumns.push('action');
+        }
       }
-      // call api by using path
-      // suppose api provide data in variable datasource
-
+      
+      this.cdr.detectChanges();
     }
   }
 
   public handleButtonClick(event: any) {
-
+    // Logic for button click
   }
 
-  public onView(row: {}) {
-    console.log(row)
+  public onView(row: any) {
+    console.log('View:', row);
   }
 
+  public onEdit(row: any) {
+    console.log('Edit:', row);
+  }
+
+  public onPageChange(event: PageEvent) {
+    this.paginationChange.emit(event);
+  }
 }

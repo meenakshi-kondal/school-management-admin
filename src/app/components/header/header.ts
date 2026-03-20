@@ -1,11 +1,64 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class Header {
-thought = "Be the reason behind someone’s happiness and spread positivity";
+export class Header implements OnInit {
+
+  activeModule: {name: string, icon: string} | null = null;
+  adminName: string = 'Admin';
+  moduleList = [
+      { name: 'Dashboard', path: '/admin', icon: 'fa-gauge' },
+      { name: 'Teachers', path: '/admin/teachers', icon: 'fa-chalkboard-user' },
+      { name: 'Students', path: '/admin/students', icon: 'fa-users' },
+      { name: 'Classes', path: '/admin/classes', icon: 'fa-school' },
+      { name: 'Admission', path: '/admin/admission', icon: 'fa-book' },
+  ];
+
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    const storedName = localStorage.getItem('name');
+    if (storedName) this.adminName = storedName;
+
+    this.updateActiveModule(this.router.url);
+
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.updateActiveModule(event.urlAfterRedirects);
+    });
+  }
+
+  updateActiveModule(url: string) {
+    const urlWithoutQuery = url.split('?')[0];
+    
+    // Best match wins (longest path match)
+    let matchedModule = this.moduleList[0];
+    let maxMatchLen = -1;
+    
+    for (const mod of this.moduleList) {
+        if (urlWithoutQuery === mod.path || urlWithoutQuery.startsWith(mod.path + '/')) {
+            if (mod.path.length > maxMatchLen) {
+                maxMatchLen = mod.path.length;
+                matchedModule = mod;
+            }
+        }
+    }
+    
+    this.activeModule = matchedModule;
+  }
+
+  onLogout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('name');
+    this.router.navigate(['/login']);
+  }
 }

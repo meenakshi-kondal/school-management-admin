@@ -1,30 +1,33 @@
-<div class="classes d-flex">
+<div class="classes">
+    @if(!isFormVisible) {
 
-    @for(item of class_info; track item; let i=$index) {
-    <div class="classes__card d-flex flex-column justify-content-between" [style.--card-color]="getCardColor(i+0)">
+    <div class="d-flex justify-content-end align-items-center">
+        <app-button [buttonData]="addClassButton" (buttonHandler)="showForm($event)"></app-button>
+    </div>
 
-        <div class="classes__card__header d-flex justify-content-between">
-            <div>
-                <h3 class="classes__card__header__title text-color">{{item.name}}</h3>
-                <p class="classes__card__header__count text-color">{{item.count}} Students</p>
-            </div>
-
-            <span class="classes__card__header__badge d-flex justify-content-center align-items-center text-color">
-                {{ (i + 1).toString().padStart(2, '0') }}
-
-            </span>
-
-        </div>
-
-        <div class="classes__card__footer d-flex justify-content-between align-items-center">
-
-            <div class="classes__card__footer__student d-flex align-items-center">
-                @for(student of item.students; track student) {
-                <img [src]="student.img" alt="image" class="classes__card__footer__student__image">
-                }
-                <span class="classes__card__footer__student__more primary-color">+12</span>
+    <div class="classes__cards d-flex flex-wrap gap-4 mt-4">
+        @for(item of class_info; track item._id || item.id || $index; let i=$index) {
+        <div class="classes__card d-flex flex-column justify-content-between pointer"
+            [style.--card-color]="getCardColor(i)" (click)="onViewDetails(item)">
+            <div class="classes__card__header d-flex justify-content-between">
+                <div>
+                    <h3 class="classes__card__header__title text-color">{{item.class_name}}</h3>
+                    <p class="classes__card__header__count text-color">{{item.subjects?.length || 0}} Subject</p>
+                </div>
             </div>
         </div>
+        } @empty {
+            <div class="w-100 text-center py-5">
+                <p class="text-muted">No classes found in the database.</p>
+            </div>
+        }
+    </div>
+    } @else {
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <app-button [buttonData]="backListButton" (buttonHandler)="showForm($event)"></app-button>
+    </div>
+    <div class="card p-4 shadow-sm">
+        <app-form [formConfig]="classFormConfig" (formSubmit)="onFormSubmit($event)"></app-form>
     </div>
     }
 </div>

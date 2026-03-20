@@ -28,27 +28,30 @@
 </div>
 }
 
+@if (dataSource && dataSource.data.length > 0) {
 <div class="common_table">
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
+    <!-- ... columns ... -->
     @for (col of tableContent.column; track col.key) {
     <ng-container [matColumnDef]="col.key">
       <th mat-header-cell *matHeaderCellDef>
         <b>{{ col.name }}</b>
       </th>
-
       <td mat-cell *matCellDef="let row">
-
         @if(col.key=== 'status') {
         <div class="status d-flex gap-2">
           <div class="present" [class.active]="row[col.key] === 'Present'">P</div>
           <div class="absent" [class.active]="row[col.key] === 'Absent'">A</div>
           <div class="leave" [class.active]="row[col.key] === 'Leave'">L</div>
         </div>
+        } @else if (col.key === 'name' && row['photo']) {
+        <div class="d-flex align-items-center gap-3">
+          <img [src]="row['photo']" alt="" class="row-photo">
+          <div class="name">{{row[col.key]}}</div>
+        </div>
         } @else {
         {{ row[col.key] }}
         }
-
       </td>
     </ng-container>
     }
@@ -58,24 +61,22 @@
       <th mat-header-cell *matHeaderCellDef>
         <b>Action</b>
       </th>
-
       <td mat-cell *matCellDef="let row">
-
         @for (action of tableContent.action; track action.name) {
-
         @if (action.name === 'view') {
-
-        <button mat-button (click)="onView(row)" class="primary-color btn-action">
+        <button mat-button (click)="onView(row)" class="primary-color btn-action" title="View">
           <i class="fa-regular fa-eye"></i>
         </button>
         }
-
+        @if (action.name === 'edit') {
+        <button mat-button (click)="onEdit(row)" class="primary-color btn-action" title="Edit">
+          <i class="fa-regular fa-pen-to-square"></i>
+        </button>
+        }
         }
       </td>
-
     </ng-container>
     }
-
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let element; columns: displayedColumns;"></tr>
@@ -84,7 +85,10 @@
 
 @if(tableContent.pagination) {
 <div class="pagination">
-  <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+  <mat-paginator [length]="totalLength" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]" aria-label="Select page" (page)="onPageChange($event)">
   </mat-paginator>
 </div>
+}
+} @else {
+    <app-no-data></app-no-data>
 }

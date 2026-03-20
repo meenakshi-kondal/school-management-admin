@@ -1,59 +1,69 @@
-# Management
+# School Management System
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.0.
+This project contains a complete School Management System separated into a frontend (Angular) and a backend (Node.js/Express with MongoDB). 
 
-## Development server
+## What We Created
+We implemented essential features for managing a school environment:
+1. **Frontend Integration (`management`)**: 
+   - An Angular-based UI for users to interact with.
+   - An `ApiService` to handle HTTP requests securely.
+   - An HTTP Interceptor to automatically attach JWT authorization tokens.
+   - Dedicated components to handle forms, such as **Student Admission** and **Adding Teachers**.
+   - A fully functional **Login Page** linked to the backend authentication API.
 
-To start a local development server, run:
+2. **Backend API (`school-backend`)**:
+   - A Node.js backend running Express and connected to a MongoDB database.
+   - Registration APIs to add students and teachers.
+   - Login endpoints for authentication, securely issuing JSON Web Tokens (JWT).
+   - Dynamic user schemas using MongoDB discriminators allowing teachers, students, and admins to coexist smoothly.
+   - An auto-seeding mechanism to seamlessly create a default admin profile on boot.
 
-```bash
-ng serve
-```
+## How to Run
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 1. Running the Backend 🛠️
 
-## Code scaffolding
+Ensure you have your MongoDB instance running.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+1. Navigate to the backend directory:
+   ```bash
+   cd ../school-backend
+   ```
+2. Install the necessary dependencies (if you haven't yet):
+   ```bash
+   npm install
+   ```
+3. Start the development server (runs on `http://localhost:5000` by default):
+   ```bash
+   npm run dev
+   ```
 
-```bash
-ng generate component component-name
-```
+*(On a successful boot, the system ensures a connection to MongoDB and seeds the default admin account if necessary).*
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### 2. Running the Frontend 🌐
 
-```bash
-ng generate --help
-```
+1. Navigate to the management directory:
+   ```bash
+   cd ../management
+   ```
+2. Install the dependencies:
+   ```bash
+   npm install
+   ```
+3. Boot the Angular development server (runs on `http://localhost:4200` by default):
+   ```bash
+   npm run start
+   # or
+   ng serve
+   ```
 
-## Building
+## Administrator Information 🔐
 
-To build the project run:
+When the backend spins up and successfully connects to your MongoDB database, it executes an auto-seeder to guarantee an admin profile is available to use immediately.
 
-```bash
-ng build
-```
+If there is no admin registered in the system, you can log in to the frontend application using the newly created default credentials:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+**Email:** `admin@test.com`  
+**Password:** `Admin@11`  
+**Role:** `admin`
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Simply use these credentials on the login page to gain access to the dashboard. Once authenticated, the system will provide an authorization token to perform other tasks (like admitting students or saving new teacher profiles).

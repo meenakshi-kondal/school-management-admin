@@ -1,28 +1,41 @@
 .mat-mdc-table {
     background-color: var(--background-color);
     border-collapse: separate;
-    border-spacing: 0 10px;
 
     th {
         position: sticky;
         top: 0;
+        background-color: var(--background-color);
 
     }
 
     th,
     td {
         font-size: 16px;
-        border-bottom-width: 0;
+        border-bottom: 1px solid #eee;
     }
 
     tr {
         background-color: var(--text-color);
 
     }
+
+    .row-photo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--background-color);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .name {
+        font-weight: 600;
+        font-size: 14px;
+    }
 }
 
 .common_table {
-    margin: 20px 0;
     max-height: 440px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -61,7 +74,7 @@ mat-paginator {
     }
 
     .leave {
-        --clr: var(--secondary-color);
+        --clr: var(--warn-color);
     }
 
     .present,

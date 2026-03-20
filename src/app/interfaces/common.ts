@@ -35,6 +35,26 @@ export interface TABLE {
   }[]
 }
 
+export interface FORMFIELD {
+  key: string;
+  label: string;
+  type: string;
+  options?: any[]; // For select, radio, etc.
+  placeholder?: string;
+  required?: boolean;
+  value?: any;
+  colSpan?: number; // For grid layout (1, 2, 3, or 4)
+}
+
+export interface FORM {
+  title?: string;
+  sections: {
+    sectionTitle?: string;
+    fields: FORMFIELD[];
+  }[];
+  submitButton?: BUTTONDATA;
+}
+
 export interface ROUTINEROW {
   class_name: string;
   teacher_name: string;

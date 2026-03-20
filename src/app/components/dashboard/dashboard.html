@@ -1,84 +1,143 @@
-<!-- <div class="d-flex gap-5"> -->
+<div class="dashboard d-flex gap-5">
 
+	<div class="dashboard__tabs d-flex flex-column">
 
-<div class="dashboard">
-	<div class="dashboard__details d-flex">
+		<div class="d-flex gap-5">
+			@for(item of dashboard_details; track item; let i=$index) {
+			<div class="dashboard__tabs__card d-flex align-items-center justify-content-between"
+				[style.--card-color]="getCardColor(i+1)">
+				<img [src]="item.img" class="dashboard__tabs__card__image">
+				<div class="dashboard__tabs__card__content d-flex flex-column align-items-end text-color">
+					<div class="dashboard__tabs__card__content__title">{{item.title}}</div>
+					<div class="dashboard__tabs__card__content__count">{{item.count}}</div>
+				</div>
+			</div>
+			}
+		</div>
 
-		@for(item of dashboard_details; track item; let i=$index) {
-		<div class="dashboard__details__card" [style.--card-color]="getCardColor(i+1)">
-			<img [src]="item.img" class="dashboard__details__card__image">
-			<div class="dashboard__details__card__content d-flex text-color">
-				<div class="dashboard__details__card__content__count">{{item.count}}</div>
-				<div class="dashboard__details__card__content__title">{{item.title}}</div>
+		<div class="dashboard__chart d-flex gap-5 flex-wrap">
+			<div class="dashboard__chart__attendance">
+				<apx-chart [series]="attendanceChart.series" [chart]="attendanceChart.chart"
+					[xaxis]="attendanceChart.xaxis" [stroke]="attendanceChart.stroke" [fill]="attendanceChart.fill"
+					[colors]="attendanceChart.colors" [dataLabels]="attendanceChart.dataLabels"
+					[grid]="attendanceChart.grid">
+				</apx-chart>
+			</div>
+
+			<div class="dashboard__chart__student">
+				<apx-chart [series]="genderChart.series" [chart]="genderChart.chart" [labels]="genderChart.labels"
+					[legend]="genderChart.legend" [colors]="genderChart.colors"></apx-chart>
+			</div>
+
+			<div class="dashboard__chart__rankers w-100">
+				<div class="dashboard__chart__rankers__header d-flex justify-content-between align-items-center">
+					<div class="title">Top Rankers</div>
+					<div class="view-all cursor-pointer">View All</div>
+				</div>
+				<div class="dashboard__chart__rankers__table-container w-100">
+					<table class="dashboard__chart__rankers__table w-100">
+						<thead>
+							<tr>
+								<th>Student</th>
+								<th>ID Number</th>
+								<th>Standard</th>
+								<th class="text-end">Rank (%)</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for(student of topRankers; track student.id) {
+							<tr>
+								<td>
+									<div class="d-flex align-items-center gap-3">
+										<img [src]="student.photo" alt="" class="photo">
+										<div class="name">{{student.name}}</div>
+									</div>
+								</td>
+								<td>
+									<div class="id-text">{{student.id}}</div>
+								</td>
+								<td>
+									<div class="standard-tag">{{student.standard}}</div>
+								</td>
+								<td class="text-end">
+									<div class="rank-container d-flex flex-column align-items-end">
+										<div class="rank-score">{{student.score}}%</div>
+										<div class="progress-bar-bg">
+											<div class="progress-bar-fill" [style.width.%]="student.score"></div>
+										</div>
+									</div>
+								</td>
+							</tr>
+							}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
-		}
+
 	</div>
 
-	<div class="dashboard__timetable">
+	<div class="dashboard__events">
 
-		<div class="d-flex justify-content-between dashboard__timetable__heading">
-			<div class="dashboard__timetable__heading__title">
-				Class Routine
+		<div class="dashboard__events__calendar">
+			<div class="dashboard__events__calendar__events d-flex justify-content-between align-items-center">
+
+				<div>Events Calendar</div>
+
 			</div>
-			<div class="dashboard__timetable__heading__date primary-color">
-				{{todayDate | date:'MMMM d, yyyy'}}
+			<div class="dashboard__events__calendar__items">
+				@for(item of events; track item.name) {
+				<div class="dashboard__events__calendar__items__event d-flex flex-column mb-1"
+					[style.border-left-color]="item.color">
+					<span class="date">{{item.date}} {{currentMonth.substring(0,3)}}</span>
+					<span class="name">{{item.name}}</span>
+				</div>
+				}
 			</div>
-		</div>
+			<div class="dashboard__events__calendar__header d-flex justify-content-between align-items-center">
+				<i class="fa-solid fa-angle-left cursor-pointer" (click)="prevMonth()"></i>
+				<h3>{{ currentMonth }} {{ currentYear }}</h3>
+				<i class="fa-solid fa-angle-right cursor-pointer" (click)="nextMonth()"></i>
+			</div>
+			<div class="dashboard__events__calendar__grid">
+				@for(day of weekdays; track day) {
+				<div class="dashboard__events__calendar__grid__name">{{ day }}</div>
+				}
 
-		<div class="dashboard__timetable__routine">
-			<table class="dashboard__timetable__routine__table">
-				<thead>
-					<tr>
-						@for(head of column; track head.key; let i = $index) {
-						<th>
-							<div class="dashboard__timetable__routine__table__head">
-								{{head.name}}
-							</div>
-						</th>
-						}
-					</tr>
-				</thead>
+				@for(day of calendarDays; track $index) {
+				<div class="dashboard__events__calendar__grid__day d-flex justify-content-center align-items-center"
+					[class.empty]="day.date === 0" [style.background]="day.hasEvent ? day.eventColor : 'transparent'"
+					[style.color]="day.hasEvent ? 'white' : '#555'">
 
-				<tbody>
-					@for(row of dataSource; track row.class_name; let i= $index) {
-					<tr>
-						@for (col of column; track col.key) {
-						<td>
-							{{ col.key === 'class' ? row.class_name : row.time_table[col.key] }}
-
-							<div *ngIf="col.key !== 'class' && row.time_table[col.key] !== 'Break'"
-								class="teacher-info">
-								<span class="title">
-									{{ row.teacher_name }}
-								</span>
-								<img [src]="row.teacher_img">
-							</div>
-						</td>
-						}
-					</tr>
+					@if(day.date !== 0) {
+					<span class="date">{{ day.date }}</span>
 					}
-				</tbody>
-			</table>
+
+				</div>
+				}
+			</div>
+		</div>
+
+		<div class="dashboard__events__notice-board">
+			<div class="dashboard__events__notice-board__header d-flex justify-content-between align-items-center">
+				<div class="title">Notice Board</div>
+				<div class="view-all cursor-pointer">View All</div>
+			</div>
+
+			<div class="dashboard__events__notice-board__list">
+				@for(notice of notices; track notice.id) {
+				<div class="notice-item d-flex flex-column">
+					<div class="notice-item__heading">{{notice.heading}}</div>
+					<div class="notice-item__footer d-flex align-items-center gap-2 mt-2">
+						<span class="notice-item__author">
+							<i class="fa-regular fa-circle-user me-1"></i>{{notice.author}}
+						</span>
+						<span class="text-muted" style="font-size: 0.75rem;">• {{notice.time}}</span>
+					</div>
+				</div>
+				}
+			</div>
 		</div>
 	</div>
+
 </div>
-
-<!-- <div class="admin d-flex flex-column justify-content-between align-items-center">
-		<div class="admin__card">
-			<div class="admin__card__avatar">
-				<img [src]="admin_card.img" alt="User Illustration">
-			</div>
-
-			<div class="admin__card__content">
-				<h3>Welcome, {{admin_card.name}}</h3>
-				<p>Logged in as {{admin_card.role}}</p>
-			</div>
-		</div>
-		<div id="admin__chart">
-			<apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [labels]="chartOptions.labels"
-				[responsive]="chartOptions.responsive">
-			</apx-chart>
-		</div>
-	</div> -->
-<!-- </div> -->

@@ -6,6 +6,7 @@ import { Teachers } from './components/teachers/teachers';
 import { Classes } from './components/classes/classes';
 import { Students } from './components/students/students';
 import { Admission } from './components/admission/admission';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,6 +14,7 @@ export const routes: Routes = [
     {
         path: 'admin',
         component: Homepage,
+        canActivate: [authGuard],
         children: [
             { path: '', component: Dashboard },
             { path: 'teachers', component: Teachers },

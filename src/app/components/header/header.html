@@ -1,15 +1,18 @@
-<div class="header d-flex justify-content-between">
+<div class="header d-flex justify-content-between align-items-center">
 
-    <div class="header__thought">
-        {{thought}}
+    <div class="header__module-info d-flex align-items-center" *ngIf="activeModule">
+        <span class="header__module-info__name me-3">{{activeModule.name}}</span>
     </div>
+
     <div class="header__content d-flex">
-        <div class="header__content__notification"><i class="fa-regular fa-bell"></i></div>
-        <div class="header__content__chat"><i class="fa-regular fa-comments"></i></div>
-        <div class="header__content__profile">
+        <div class="header__content__notification d-flex align-items-center justify-content-center"><i
+                class="fa-regular fa-bell"></i></div>
+        <div class="header__content__chat d-flex align-items-center justify-content-center"><i
+                class="fa-regular fa-comments"></i></div>
+        <div class="header__content__profile d-flex align-items-center justify-content-center" (click)="onLogout()" style="cursor: pointer;">
             <img src="/assets/profile.png" class="header__content__profile__image">
-            <span class="header__content__profile__name">
-                Admin
+            <span class="header__content__profile__name ms-2">
+                {{adminName}} <i class="fa-solid fa-right-from-bracket ms-2 text-danger"></i>
             </span>
         </div>
     </div>

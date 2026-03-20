@@ -1,61 +1,61 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Button } from '../button/button';
+import { CommonModule } from '@angular/common';
+import { FORM } from '../../interfaces/common';
 
 @Component({
   selector: 'app-form',
-  imports: [ReactiveFormsModule, Button],
+  imports: [ReactiveFormsModule, Button, CommonModule],
+  standalone: true,
   templateUrl: './form.html',
   styleUrl: './form.scss'
 })
-export class Form {
-  buttonData = {
-    value: 'Submit',
-    type: 'primary'
+export class Form implements OnInit {
+  @Input() formConfig: FORM = {
+    sections: []
   };
-  admissionForm!: FormGroup;
-  years = ['2024-2025', '2025-2026'];
-  sections = ['A', 'B', 'C'];
-  groups = ['Science', 'Commerce', 'Arts'];
-  genders = ['Male', 'Female', 'Other'];
-  classes = ['Nursery', 'KG', '1', '2', '3', '4', '5'];
+
+  @Output() formSubmit = new EventEmitter<any>();
+
+  dynamicForm!: FormGroup;
 
   constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    this.admissionForm = this.fb.group({
-      // guardian info
-      motherName: [''],
-      fatherName: [''],
-      email: [''],
-      phone: [''],
+    const group: any = {};
 
-      // Student Info
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      gender: ['', Validators.required],
-      dob: ['', Validators.required],
-      admitClass: ['', Validators.required],
-      admitSection: ['', Validators.required],
-
-      photo: [null],
-      birthCertificate: [null],
+    this.formConfig.sections.forEach(section => {
+      section.fields.forEach(field => {
+        const validators = [];
+        if (field.required) {
+          validators.push(Validators.required);
+        }
+        group[field.key] = [field.value || '', validators];
+      });
     });
+
+    this.dynamicForm = this.fb.group(group);
   }
 
-
-
-
-  public onSubmit(data: any) {
-    console.log(this.admissionForm.value);
+  public onSubmit() {
+    if (this.dynamicForm.valid) {
+      this.formSubmit.emit(this.dynamicForm.value);
+    } else {
+      this.dynamicForm.markAllAsTouched();
+    }
   }
+
+  public resetForm() {
+    this.dynamicForm.reset();
+  }
+
   onFileChange(event: any, controlName: string) {
     const file = event.target.files[0];
     if (file) {
-      this.admissionForm.patchValue({
+      this.dynamicForm.patchValue({
         [controlName]: file,
       });
     }
   }
-
 }

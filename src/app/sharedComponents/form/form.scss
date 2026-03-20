@@ -1,14 +1,73 @@
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.common-form {
+  background: var(--text-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 
-input, select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  .section-title {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-bottom: 2px solid color-mix(in srgb, var(--primary-color) 15%, transparent);
+    padding-bottom: 8px;
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #dde1e6;
+    background: var(--background-color);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 12%, transparent);
+    }
+  }
+
+  select.form-control {
+    cursor: pointer;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .col-span-1 { grid-column: span 1; }
+  .col-span-2 { grid-column: span 2; }
+  .col-span-3 { grid-column: span 3; }
+  .col-span-4 { grid-column: span 4; }
 }
 
-label { font-weight: 600; margin-bottom: 6px; display: block; }
-h4 { margin-top: 24px; }
-button { margin-top: 20px; padding: 10px 20px; }
+@media (max-width: 992px) {
+  .common-form .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .common-form .col-span-3, 
+  .common-form .col-span-4 {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 576px) {
+  .common-form .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  .common-form .col-span-1,
+  .common-form .col-span-2,
+  .common-form .col-span-3, 
+  .common-form .col-span-4 {
+    grid-column: span 1;
+  }
+}

@@ -1,33 +1,59 @@
 <div class="students">
 
-    <div class="students__cards d-flex">
-        <div class="d-flex justify-content-between w-100">
-            <div class="d-flex gap-5">
-                @for(card of visibleCards(); track card.class_name; let i =$index) {
-                <div class="students__cards__details text-color" 
-                    [style.--card-color]="getCardColor(startIndex + i)"
-                    [class.selected]="selectedClass === card.class_name"
-                    (click)="onCardClick(card.class_name)">
-                    <div class="students__cards__details__name">{{card.class_name}}</div>
-                    <div class="students__cards__details__count">{{card.count}} Students</div>
-                </div>
+    <!-- Stats Tabs -->
+    <div class="students__stats d-flex gap-4">
+        @for(tab of statsTabs; track tab.key; let i =$index) {
+        <div class="students__stats__tab d-flex align-items-center justify-content-between" 
+            [style.--card-color]="getCardColor(i+1)"
+            [class.active]="activeTab === tab.key">
+            <img [src]="tab.image" [alt]="tab.label" class="students__stats__tab__image">
+            <div class="students__stats__tab__info d-flex flex-column align-items-end text-color">
+                <div class="students__stats__tab__info__label">{{tab.label}}</div>
+                <div class="students__stats__tab__info__count">{{getTabCount(tab.key)}}</div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="students__filters d-flex align-items-center gap-3 mt-5">
+        <div class="students__filters__select">
+            <select [(ngModel)]="selectedClass" (change)="onFilterChange()">
+                <option value="">Select Class</option>
+                @for(cls of students_classes; track cls.class_name) {
+                <option [value]="cls._id">{{cls.class_name}}</option>
                 }
-            </div>
-
-            <div class="students__cards__action d-flex flex-column justify-content-between">
-                <button class="students__cards__action__arrow" (click)="prev()" [disabled]="startIndex === 0">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-                <button class="students__cards__action__arrow" (click)="next()"
-                    [disabled]="startIndex + cardsPerView >= students_classes.length">
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-
+            </select>
         </div>
 
+        <div class="students__filters__select">
+            <select [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+                <option value="">Status</option>
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+                <option value="Leave">Leave</option>
+            </select>
+        </div>
+
+        <div class="students__filters__search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search by Name or Roll No..." [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+        </div>
+
+        <div class="students__filters__search-btn">
+            <app-button [buttonData]="searchButton" (buttonHandler)="onSearch()"></app-button>
+        </div>
+
+        <div class="students__filters__add-btn">
+            <app-button [buttonData]="addStudentButton" (buttonHandler)="onAddStudent()"></app-button>
+        </div>
     </div>
-    <div class="students__table mt-5">
-        <app-table [tableContent]="studentsDetails"></app-table>
+
+    <!-- Table -->
+    <div class="students__table">
+        <app-table [tableContent]="studentsDetails" 
+                   [totalLength]="totalStudentsCount" 
+                   (paginationChange)="onPaginationChange($event)" (viewAction)="onViewStudent($event)">
+        </app-table>
     </div>
 </div>

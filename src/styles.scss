@@ -1,12 +1,14 @@
 @use "bootstrap/scss/bootstrap";
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 
 :root {
-  --primary-color: var(--mat-sys-primary);
-  --secondary-color: #FFC107;
+  --primary-color: #12b886;
+  --warn-color: #FFC107;
   --error-color: #F44336;
-  --background-color: var(--mat-sys-background);
+  --background-color: #F2F3EE;
   --text-color: #FFFFFF;
-  --secondary-background: #fff;
+  --secondary-text-color: #888;
+  --secondary-background: #ffffff8f;
 }
 
 html,
@@ -17,8 +19,8 @@ body {
   overflow-x: hidden;
   background-color: var(--background-color);
   font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
 }
-
 
 .text-color {
   color: var(--text-color)
@@ -30,4 +32,29 @@ body {
 
 .primary-color {
   color: var(--primary-color);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Custom Notification Panels (Styled Snackbars) */
+
+.notification.success {
+  // mat-mdc-snack-bar-container .mat-mdc-snackbar-surface
+  --mdc-snackbar-container-color: var(--primary-color) !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+  --mat-snack-bar-button-color: #fff !important;
+}
+
+.notification.error {
+  --mdc-snackbar-container-color: var(--error-color) !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+  --mat-snack-bar-button-color: #fff !important;
+}
+
+.notification.info {
+  --mdc-snackbar-container-color: var(--warn-color) !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+  --mat-snack-bar-button-color: #fff !important;
 }

@@ -1,0 +1,33 @@
+.no-data-container {
+    padding: 3rem;
+    text-align: center;
+    background: transparent;
+    border-radius: 20px;
+    margin: 0 auto;
+    width: 100%;
+    min-height: 400px; /* Gives enough room for vertical centering */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-data-icon-wrapper {
+    font-size: 4rem;
+    color: var(--secondary-text-color, #6c757d);
+    opacity: 0.5;
+    
+    i {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.no-data-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+    text-transform: capitalize;
+}

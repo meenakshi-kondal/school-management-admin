@@ -9,11 +9,11 @@ import { RouterModule } from '@angular/router';
 })
 export class Sidebar {
 	moduleList = [
-		{ name: 'Dashboard', path: '/admin' },
-		{ name: 'Teachers', path: '/admin/teachers' },
-		{ name: 'Students', path: '/admin/students' },
-		{ name: 'Classes ', path: '/admin/classes' },
-		{ name: 'Admission', path: '//admin/admission' },
+		{ name: 'Dashboard', path: '/admin', icon: 'fa-gauge' },
+		{ name: 'Teachers', path: '/admin/teachers', icon: 'fa-chalkboard-user' },
+		{ name: 'Students', path: '/admin/students', icon: 'fa-users' },
+		{ name: 'Classes', path: '/admin/classes', icon: 'fa-school' },
+		{ name: 'Admission', path: '/admin/admission', icon: 'fa-book' },
 	];
 	isSidebarOpen: Boolean = true;
 
