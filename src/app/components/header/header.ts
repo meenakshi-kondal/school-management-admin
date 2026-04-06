@@ -2,10 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '../../services/api.service';
+import { NotificationService } from '../../services/notification.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
@@ -21,19 +24,27 @@ export class Header implements OnInit {
       { name: 'Admission', path: '/admin/admission', icon: 'fa-book' },
   ];
 
-  constructor(private router: Router) {}
+  notices: any[] = [];
+  unreadCount: number = 0;
+  isNoticeOpen: boolean = false;
+  isAddingNotice: boolean = false;
+  newNotice = { title: '', description: '' };
+  currentUserId: string | null = null;
+
+  constructor(
+    private router: Router,
+    private apiService: ApiService,
+    private notify: NotificationService
+  ) {}
 
   ngOnInit() {
+    this.currentUserId = localStorage.getItem('userId');
     const storedName = localStorage.getItem('name');
     if (storedName) this.adminName = storedName;
 
     this.updateActiveModule(this.router.url);
 
-    this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      this.updateActiveModule(event.urlAfterRedirects);
-    });
+  
   }
 
   updateActiveModule(url: string) {
@@ -57,7 +68,7 @@ export class Header implements OnInit {
 
   onLogout() {
     localStorage.removeItem('token');
-    localStorage.removeItem('user_id');
+    localStorage.removeItem('userId');
     localStorage.removeItem('name');
     this.router.navigate(['/login']);
   }

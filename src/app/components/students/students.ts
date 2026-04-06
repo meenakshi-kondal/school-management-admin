@@ -1,23 +1,25 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Table } from '../../sharedComponents/table/table';
 import { Button } from '../../sharedComponents/button/button';
+import { Form } from '../../sharedComponents/form/form';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BUTTONDATA } from '../../interfaces/common';
+import { FORM } from '../../interfaces/common';
 import { PageEvent } from '@angular/material/paginator';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { DialogBox } from '../../sharedComponents/dialog-box/dialog-box';
-
 import { ApiService } from '../../services/api.service';
+import { CommonService } from '../../services/common.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-students',
   standalone: true,
-  imports: [Table, Button, CommonModule, FormsModule, DialogBox, MatDialogModule],
+  imports: [Table, Button, Form, CommonModule, FormsModule],
   templateUrl: './students.html',
   styleUrl: './students.scss'
 })
 export class Students implements OnInit {
+  @ViewChild(Form) studentForm!: Form;
+  public isFormVisible: boolean = false;
   activeTab: string = 'all';
   selectedClass: string = '';
   selectedStatus: string = '';
@@ -26,28 +28,10 @@ export class Students implements OnInit {
   pageSize: number = 10;
   totalStudentsCount: number = 0;
 
-  constructor(
-    private apiService: ApiService,
-    private cdr: ChangeDetectorRef,
-    private dialog: MatDialog
-  ) { }
-
-  searchButton: BUTTONDATA = {
-    value: 'Search',
-    type: 'secondary',
-    icon: '<i class="fa-solid fa-magnifying-glass me-2"></i>'
-  };
-
-  addStudentButton: BUTTONDATA = {
-    value: 'Add Student',
-    type: 'primary',
-    icon: '<i class="fa-solid fa-plus me-2"></i>'
-  };
-
   statsTabs = [
-    { key: 'all', label: 'Total Students', image: '/assets/students.png', iconClass: '' },
-    { key: 'boys', label: 'Total Boys', image: '/assets/teachers.png', iconClass: 'boys' },
-    { key: 'girls', label: 'Total Girls', image: '/assets/students.png', iconClass: 'girls' }
+    { key: 'all', label: 'Total Students', image: '/assets/students.png' },
+    { key: 'boys', label: 'Total Boys', image: '/assets/teachers.png' },
+    { key: 'girls', label: 'Total Girls', image: '/assets/students.png' }
   ];
 
   students_classes: any[] = [];
@@ -58,7 +42,8 @@ export class Students implements OnInit {
     column: [
       { name: 'Roll No', key: 'roll_number' },
       { name: 'Name', key: 'name' },
-      { name: 'Gender', key: 'gender' },
+      { name: 'Gender', key: 'gender_display' },
+      { name: 'Class', key: 'class_name' },
       { name: 'Status', key: 'status' }
     ],
     action: [
@@ -66,11 +51,62 @@ export class Students implements OnInit {
       { name: 'edit' }
     ],
     path: '',
-    dataSource: this.allStudents,
+    dataSource: [],
     pagination: true
   };
   totalBoysCount: number = 0;
   totalGirlsCount: number = 0;
+
+  studentFormConfig: FORM = {
+    sections: [
+      {
+        sectionTitle: 'Student Information',
+        fields: [
+          { key: 'first_name', label: 'First Name', type: 'text', required: true },
+          { key: 'last_name', label: 'Last Name', type: 'text' },
+          { key: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Other'], required: true },
+          { key: 'dob', label: 'Date of Birth', type: 'date', required: true },
+          { key: 'class_id', label: 'Admission Class', type: 'select', options: [], required: true },
+          { key: 'blood_group', label: 'Blood Group', type: 'select', options: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
+          { key: 'photo', label: 'Student Photo', type: 'file' },
+        ]
+      },
+      {
+        sectionTitle: 'Guardian Information',
+        sectionKey: 'guardians',
+        addButton: true,
+        fields: [
+          { key: 'relation', label: 'Relation', type: 'select', options: ['Father', 'Mother', 'Guardian', 'Other'], required: true },
+          { key: 'name', label: 'Name', type: 'text', required: true },
+          { key: 'email', label: 'Email ID', type: 'email' },
+          { key: 'phone', label: 'Phone Number', type: 'tel', required: true },
+          { key: 'occupation', label: 'Occupation', type: 'text' },
+          { key: 'aadhaar_card', label: 'Aadhar Card', type: 'file' }
+        ]
+      },
+      {
+        sectionTitle: 'Documents Upload',
+        sectionKey: 'documents',
+        addButton: true,
+        fields: [
+          { key: 'type', label: 'Document Tpye', type: 'select', options: ['Adhar Card', 'Birth Certificate', 'Migration/Report Card'] },
+          { key: 'file', label: 'Upload File', type: 'file' },
+        ]
+      }
+    ],
+    submitButton: {
+      value: 'Save Changes',
+      type: 'primary'
+    }
+  };
+
+  constructor(
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef,
+    private notify: NotificationService,
+    public service: CommonService,
+  ) { }
+
   ngOnInit() {
     this.fetchClasses();
   }
@@ -79,9 +115,17 @@ export class Students implements OnInit {
     this.apiService.getClasses().subscribe({
       next: (res: any) => {
         this.students_classes = res.data;
+        const classOptions = res.data.map((c: any) => ({ label: c.class_name, value: c._id }));
+        const studentSection = this.studentFormConfig.sections.find(s => s.sectionTitle === 'Student Information');
+        if (studentSection) {
+          const classField = studentSection.fields.find(f => f.key === 'class_id');
+          if (classField) {
+            classField.options = classOptions;
+          }
+        }
         if (this.students_classes && this.students_classes.length > 0) {
           this.selectedClass = this.students_classes[0]._id;
-          this.applyFilters();
+          this.fetchStudents();
         }
         this.cdr.detectChanges();
       },
@@ -89,66 +133,29 @@ export class Students implements OnInit {
     });
   }
 
-  get totalStudents(): number {
-    return this.totalStudentsCount;
-  }
-
-  get totalBoys(): number {
-    return this.totalBoysCount;
-  }
-
-  get totalGirls(): number {
-    return this.totalGirlsCount;
-  }
-
   public getTabCount(key: string): number {
-    if (key === 'boys') return this.totalBoys;
-    if (key === 'girls') return this.totalGirls;
-    return this.totalStudents;
-  }
-
-  public onTabClick(tab: string) {
-    this.activeTab = tab;
-    this.applyFilters();
+    if (key === 'boys') return this.totalBoysCount;
+    if (key === 'girls') return this.totalGirlsCount;
+    return this.allStudents.length;
   }
 
   public onPaginationChange(event: PageEvent) {
-    this.currentPage = event.pageIndex + 1; // 0-indexed to 1-indexed
+    this.currentPage = event.pageIndex + 1;
     this.pageSize = event.pageSize;
-    this.applyFilters();
+    this.fetchStudents();
   }
 
   public onFilterChange() {
     this.currentPage = 1; // Reset to first page
-    this.applyFilters();
+    this.fetchStudents();
   }
 
   public onSearch() {
     this.currentPage = 1; // Reset to first page
-    this.applyFilters();
+    this.fetchStudents();
   }
 
-  public onAddStudent() {
-    console.log('Add Student clicked');
-  }
-
-  public onViewStudent(row: any) {
-    if (!row?._id) return;
-    
-    this.apiService.getStudentDetails(row._id).subscribe({
-      next: (res: any) => {
-        const studentData = res.data;
-        this.dialog.open(DialogBox, {
-          width: '700px',
-          data: studentData,
-          panelClass: 'custom-dialog-container'
-        });
-      },
-      error: (err) => console.error('Error fetching student details:', err)
-    });
-  }
-
-  private applyFilters() {
+  private fetchStudents() {
     const params: any = {
       className: this.selectedClass,
       status: this.selectedStatus,
@@ -166,19 +173,13 @@ export class Students implements OnInit {
 
     this.apiService.getStudents(params).subscribe({
       next: (res: any) => {
-        console.log('Raw API Response List:', res.data.list);
         const students = res.data.list.map((s: any) => {
-          const classId = s.class_id;
-          const matchedClass = this.students_classes.find(c => c._id === classId);
-          
+          const matchedClass = this.students_classes.find(c => c._id === s.class_id);
           return {
-            roll_number: s.roll_number,
-            _id: s._id,
-            name: s.name,
-            gender: s.gender ? s.gender.charAt(0).toUpperCase() + s.gender.slice(1) : 'Other',
+            ...s,
+            gender_display: s.gender ? s.gender.charAt(0).toUpperCase() + s.gender.slice(1) : 'Other',
             status: s.attendance_status || 'Present',
-            photo: s.photo || '/assets/students.png',
-            class: matchedClass ? matchedClass.class_name : (classId || 'N/A')
+            class_name: matchedClass ? matchedClass.class_name : 'N/A'
           };
         });
 
@@ -190,27 +191,33 @@ export class Students implements OnInit {
         }
 
         this.allStudents = students;
-
-        this.studentsDetails = {
-          ...this.studentsDetails,
-          dataSource: students
-        };
+        this.studentsDetails = { ...this.studentsDetails, dataSource: students };
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error fetching students:', err)
+      error: (err) => {
+        this.notify.error(err.error.message);
+      }
     });
   }
 
-  public getCardColor(index: number) {
-    const cardColor = [
-      '#3e3eb5f2',
-      '#cf4242',
-      '#e1b44b',
-      '#075A6D',
-      '#F17404',
-      '#695845',
-      '#DE76D2'
-    ];
-    return cardColor[index % cardColor.length];
+  public onViewDetails(row: any) {
+    this.isFormVisible = true;
+    setTimeout(() => {
+      const names = row.name ? row.name.split(' ') : ['', ''];
+      const patchData = {
+        ...row,
+        first_name: row.first_name || names[0],
+        last_name: row.last_name || names.slice(1).join(' '),
+        dob: row.date_of_birth ? new Date(row.date_of_birth).toISOString().split('T')[0] : '',
+      };
+      if (this.studentForm) {
+        this.studentForm.setFormValue(patchData);
+      }
+    }, 100);
   }
+
+  public onBack() {
+    this.isFormVisible = false;
+  }
+
 }

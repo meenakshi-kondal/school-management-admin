@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Button } from '../../../sharedComponents/button/button';
 import { ApiService } from '../../../services/api.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../services/notification.service';
 
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, CommonModule, Button],
+  imports: [FormsModule, CommonModule, Button, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
@@ -25,20 +25,12 @@ export class Login {
   constructor(
     private router: Router, 
     private apiService: ApiService,
-    private snackBar: MatSnackBar
+    private notify: NotificationService
   ) { }
-
-  private showMessage(message: string) {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top'
-    });
-  }
 
   public handleButtonClick(event: any) {
     if (!this.username || !this.password) {
-      this.showMessage('Please fill in both email and password.');
+      this.notify.info('Please fill in both email and password.');
       return;
     }
 
@@ -50,19 +42,14 @@ export class Login {
     this.apiService.login(payload).subscribe({
       next: (res) => {
         if (res && res.data && res.data.token) {
-          // Store token in local storage
           localStorage.setItem('token', res.data.token);
-          if (res.data.user_id) localStorage.setItem('user_id', res.data.user_id);
+          if (res.data.userId) localStorage.setItem('userId', res.data.userId);
           if (res.data.name) localStorage.setItem('name', res.data.name);
-
-          // Navigate to admin
-          console.log('Login successful');
           this.router.navigate(['/admin']);
         }
       },
       error: (err) => {
-        console.error('Login error', err);
-        this.showMessage(err.error?.message || 'Login failed. Please check your credentials.');
+        this.notify.error(err.error.message);
       }
     });
   }

@@ -1,0 +1,59 @@
+<div class="notice-container">
+    <div class="notice-header d-flex justify-content-between align-items-center mb-4">
+        <h2>Notice Board</h2>
+        <button class="btn btn-primary" (click)="toggleAddForm()">
+            {{ isAddingNotice ? 'Show List' : 'Add Notice' }}
+        </button>
+    </div>
+
+    <!-- Add Notice Form -->
+    <div *ngIf="isAddingNotice" class="add-notice-section card p-4 mb-4">
+        <h4>Create New Notice</h4>
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" [(ngModel)]="newNotice.title" class="form-control" placeholder="Enter notice title">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea [(ngModel)]="newNotice.description" class="form-control" rows="4" placeholder="Enter notice description"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success" (click)="submitNotice()">Create Notice</button>
+            <button class="btn btn-outline-secondary" (click)="toggleAddForm()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Notice List Section -->
+    <div *ngIf="!isAddingNotice">
+        <div *ngIf="notices.length === 0" class="text-center p-5 card">
+            <i class="fa-regular fa-folder-open fa-3x mb-3 text-muted"></i>
+            <h5 class="text-muted">No notices found.</h5>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div *ngFor="let notice of notices" class="col">
+                <div class="card notice-card h-100" [class.unread]="!notice.readBy.includes(currentUserId)">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title m-0">{{ notice.title }}</h5>
+                            <button *ngIf="!notice.readBy.includes(currentUserId)" 
+                                    class="btn btn-link btn-sm text-primary p-0" 
+                                    (click)="markAsRead(notice._id)" title="Mark as Read">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </button>
+                        </div>
+                        <p class="card-text text-muted">{{ notice.description }}</p>
+                        <div class="notice-footer mt-3 d-flex justify-content-between align-items-center">
+                            <div class="text-muted small">
+                                <i class="fa-regular fa-clock me-1"></i> {{ notice.createdAt | date:'medium' }}
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger" (click)="deleteNotice(notice._id)" title="Delete Notification">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

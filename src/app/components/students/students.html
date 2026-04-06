@@ -1,23 +1,21 @@
 <div class="students">
-
-    <!-- Stats Tabs -->
-    <div class="students__stats d-flex gap-4">
+    @if(!isFormVisible) {
+    <div class="cards d-flex gap-4">
         @for(tab of statsTabs; track tab.key; let i =$index) {
-        <div class="students__stats__tab d-flex align-items-center justify-content-between" 
-            [style.--card-color]="getCardColor(i+1)"
-            [class.active]="activeTab === tab.key">
-            <img [src]="tab.image" [alt]="tab.label" class="students__stats__tab__image">
-            <div class="students__stats__tab__info d-flex flex-column align-items-end text-color">
-                <div class="students__stats__tab__info__label">{{tab.label}}</div>
-                <div class="students__stats__tab__info__count">{{getTabCount(tab.key)}}</div>
+        <div class="tab d-flex align-items-center justify-content-between"
+            [style.--card-color]="service.getCardColor(i+1)" [class.active]="activeTab === tab.key">
+            <img [src]="tab.image" [alt]="tab.label" class="image">
+            <div class="info d-flex flex-column align-items-end text-color">
+                <div class="label">{{tab.label}}</div>
+                <div class="count">{{getTabCount(tab.key)}}</div>
             </div>
         </div>
         }
     </div>
 
     <!-- Filter Bar -->
-    <div class="students__filters d-flex align-items-center gap-3 mt-5">
-        <div class="students__filters__select">
+    <div class="filters d-flex align-items-center gap-3 mt-5">
+        <div class="select">
             <select [(ngModel)]="selectedClass" (change)="onFilterChange()">
                 <option value="">Select Class</option>
                 @for(cls of students_classes; track cls.class_name) {
@@ -26,7 +24,7 @@
             </select>
         </div>
 
-        <div class="students__filters__select">
+        <div class="select">
             <select [(ngModel)]="selectedStatus" (change)="onFilterChange()">
                 <option value="">Status</option>
                 <option value="Present">Present</option>
@@ -35,25 +33,31 @@
             </select>
         </div>
 
-        <div class="students__filters__search">
+        <div class="search">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search by Name or Roll No..." [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+            <input type="text" placeholder="Search by Name or Roll No..." [(ngModel)]="searchQuery"
+                (keyup.enter)="onSearch()">
         </div>
 
-        <div class="students__filters__search-btn">
-            <app-button [buttonData]="searchButton" (buttonHandler)="onSearch()"></app-button>
-        </div>
+        <app-button [buttonData]="service.searchButton" (buttonHandler)="onSearch()"></app-button>
 
-        <div class="students__filters__add-btn">
-            <app-button [buttonData]="addStudentButton" (buttonHandler)="onAddStudent()"></app-button>
-        </div>
     </div>
 
     <!-- Table -->
     <div class="students__table">
-        <app-table [tableContent]="studentsDetails" 
-                   [totalLength]="totalStudentsCount" 
-                   (paginationChange)="onPaginationChange($event)" (viewAction)="onViewStudent($event)">
+        <app-table [tableContent]="studentsDetails" [totalLength]="totalStudentsCount"
+            (paginationChange)="onPaginationChange($event)" (view)="onViewDetails($event)">
         </app-table>
     </div>
+    } @else {
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <button class="btn btn-light border-0 rounded-circle" (click)="onBack()">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <h2 class="m-0">Student Details</h2>
+    </div>
+    <div class="students__form bg-white rounded-3 shadow-sm">
+        <app-form [formConfig]="studentFormConfig"></app-form>
+    </div>
+    }
 </div>

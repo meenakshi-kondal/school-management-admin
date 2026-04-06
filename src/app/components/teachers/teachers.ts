@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Table } from '../../sharedComponents/table/table';
 import { Button } from '../../sharedComponents/button/button';
 import { Form } from '../../sharedComponents/form/form';
@@ -6,7 +6,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BUTTONDATA, FORM } from '../../interfaces/common';
 import { ApiService } from '../../services/api.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonService } from '../../services/common.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-teachers',
@@ -16,52 +17,68 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class Teachers implements OnInit {
   @ViewChild(Form) teacherForm!: Form;
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
 
-  private showMessage(message: string) {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top'
-    });
-  }
+  constructor(
+    private apiService: ApiService,
+    private notify: NotificationService,
+    public service: CommonService,
+    private cdr: ChangeDetectorRef,
+  ) { }
+
   activeTab: string = 'all';
-  selectedClass: string = 'Standard 01';
   selectedStatus: string = '';
   searchQuery: string = '';
   isFormVisible: boolean = false;
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalTeachersCount: number = 0;
 
   teacherFormConfig: FORM = {
-    title: 'Add New Teacher',
     sections: [
       {
         sectionTitle: 'Personal Details',
         fields: [
-          { key: 'firstName', label: 'First Name', type: 'text', required: true, colSpan: 2 },
-          { key: 'lastName', label: 'Last Name', type: 'text', required: true, colSpan: 2 },
-          { key: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Other'], required: true, colSpan: 1 },
-          { key: 'dob', label: 'Date of Birth', type: 'date', required: true, colSpan: 1 },
-          { key: 'mobile', label: 'Mobile No.', type: 'tel', required: true, colSpan: 2 },
-          { key: 'email', label: 'Email ID', type: 'email', required: true, colSpan: 2 },
-          { key: 'photo', label: 'Teacher Photo', type: 'file', colSpan: 2 },
+          { key: 'first_name', label: 'First Name', type: 'text', required: true },
+          { key: 'last_name', label: 'Last Name', type: 'text', required: true },
+          { key: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Other'], required: true },
+          { key: 'dob', label: 'Date of Birth', type: 'date', required: true },
+          { key: 'mobile', label: 'Mobile No.', type: 'tel', required: true },
+          { key: 'email', label: 'Email ID', type: 'email', required: true },
+          { key: 'blood_group', label: 'Blood Group', type: 'select', options: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
+          { key: 'photo', label: 'Photo', type: 'file' },
         ]
       },
       {
         sectionTitle: 'Professional Details',
         fields: [
-          { key: 'subject', label: 'Subject', type: 'text', required: true, colSpan: 2 },
-          { key: 'class', label: 'Assigned Class', type: 'select', options: ['Standard 01', 'Standard 02', 'Standard 03', 'Standard 04', 'Standard 05', 'Standard 06'], required: true, colSpan: 2 },
-          { key: 'qualification', label: 'Qualification', type: 'text', colSpan: 2 },
-          { key: 'experience', label: 'Experience (Years)', type: 'number', colSpan: 2 },
+          { key: 'highest_qualification', label: 'Highest Qualification', type: 'text' },
+          { key: 'experience', label: 'Experience (Years)', type: 'number' },
+          { key: 'class', label: 'Class', type: 'select', options: [] },
+          { key: 'subject', label: 'Subject', type: 'text' },
+          { key: 'joining_date', label: 'Joining Date', type: 'date', required: true },
+
+        ]
+      },
+      {
+        sectionTitle: 'Guardian Information',
+        sectionKey: 'guardians',
+        addButton: true,
+        fields: [
+          { key: 'relation', label: 'Relation', type: 'select', options: ['Father', 'Mother', 'Guardian', 'Other'], required: true },
+          { key: 'name', label: 'Name', type: 'text', required: true },
+          { key: 'email', label: 'Email ID', type: 'email' },
+          { key: 'phone', label: 'Phone Number', type: 'tel', required: true },
+          { key: 'occupation', label: 'Occupation', type: 'text' },
+          { key: 'aadhaar_card', label: 'Aadhar Card', type: 'file' }
         ]
       },
       {
         sectionTitle: 'Documents Upload',
+        sectionKey: 'documents',
+        addButton: true,
         fields: [
-          { key: 'aadharCard', label: 'Aadhar Card (PDF)', type: 'file', colSpan: 2 },
-          { key: 'tenthCert', label: '10th Certificate (PDF)', type: 'file', colSpan: 2 },
-          { key: 'twelfthCert', label: '12th Certificate (PDF)', type: 'file', colSpan: 2 },
-          { key: 'degreeCert', label: 'Degree Certificate (PDF)', type: 'file', colSpan: 2 },
+          { key: 'type', label: 'Document Tpye', type: 'select', options: ['Adhar Card', 'Highest Qualification', 'Experience Certificate'] },
+          { key: 'file', label: 'Upload File', type: 'file' },
         ]
       }
     ],
@@ -70,12 +87,6 @@ export class Teachers implements OnInit {
       type: 'primary',
       icon: '<i class="fa-solid fa-save me-2"></i>'
     }
-  };
-
-  searchButton: BUTTONDATA = {
-    value: 'Search',
-    type: 'secondary',
-    icon: '<i class="fa-solid fa-magnifying-glass me-2"></i>'
   };
 
   addTeacherButton: BUTTONDATA = {
@@ -90,60 +101,83 @@ export class Teachers implements OnInit {
 
   teachers_classes: any[] = [];
 
-  allTeachers = [
-    { id: 1, name: 'John Doe', gender: 'Male', subject: 'Math', class: 'Standard 01', photo: '/assets/teachers.png', status: 'Present' },
-    { id: 2, name: 'Jane Smith', gender: 'Female', subject: 'English', class: 'Standard 01', photo: '/assets/students.png', status: 'Present' },
-    { id: 3, name: 'Robert Brown', gender: 'Male', subject: 'Science', class: 'Standard 02', photo: '/assets/teachers.png', status: 'Absent' },
-    { id: 4, name: 'Emily Davis', gender: 'Female', subject: 'History', class: 'Standard 01', photo: '/assets/students.png', status: 'Present' },
-    { id: 5, name: 'Michael Wilson', gender: 'Male', subject: 'Geography', class: 'Standard 03', photo: '/assets/teachers.png', status: 'Leave' },
-  ];
-
   teachersDetails = {
     title: '',
     column: [
-      { name: 'ID', key: 'id' },
       { name: 'Name', key: 'name' },
-      { name: 'Gender', key: 'gender' },
-      { name: 'Subject', key: 'subject' },
-      { name: 'Class', key: 'class' },
-      { name: 'Status', key: 'status' }
+      { name: 'Email', key: 'email' },
+      { name: 'Phone', key: 'phone' },
+      { name: 'Gender', key: 'gender_display' },
+      { name: 'Joining Date', key: 'joining_date_display' },
+      { name: 'Status', key: 'status', type: 'toggle' }
     ],
     action: [
-      { name: 'view' },
-      { name: 'edit' }
+      { name: 'view' }
     ],
     path: '',
-    dataSource: this.allTeachers,
+    dataSource: [],
     pagination: true
   };
 
   ngOnInit() {
-    this.fetchDynamicClasses();
-    this.applyFilters();
+    this.fetchTeachers();
+    this.fetchClassesList();
   }
 
-  fetchDynamicClasses() {
+  fetchTeachers() {
+
+    const params: any = {
+      search: this.searchQuery.trim(),
+      pagination: true,
+      page: this.currentPage,
+      limit: this.pageSize
+    };
+
+    this.apiService.getTeachers(params).subscribe({
+      next: (res: any) => {
+        const teachers = res.data.list.map((t: any) => ({
+          ...t,
+          gender_display: t.gender ? t.gender.charAt(0).toUpperCase() + t.gender.slice(1) : 'Other',
+          joining_date_display: t.joining_date ? new Date(t.joining_date).toLocaleDateString() : 'N/A',
+        }));
+
+        this.totalTeachersCount = res.data.total;
+        this.teachersDetails = {
+          ...this.teachersDetails,
+          dataSource: teachers
+        };
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.notify.error(err.error.message);
+      }
+    });
+  }
+
+  fetchClassesList() {
     this.apiService.getClasses().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         if (res && res.data) {
-          this.teachers_classes = res.data;
-          
-          // Update the form config with real class options
-          const classOptions = res.data.map((c: any) => c.class_name);
-          const profSection = this.teacherFormConfig.sections.find(s => s.sectionTitle === 'Professional Details');
-          if (profSection) {
-            const classField = profSection.fields.find(f => f.key === 'class');
+          const classes = res.data.map((c: any) => ({ label: c.class_name, value: c._id }));
+          const section = this.teacherFormConfig.sections.find(s => s.sectionTitle === 'Professional Details');
+          if (section) {
+            const classField = section.fields.find(f => f.key === 'class');
             if (classField) {
-              classField.options = classOptions;
+              classField.options = classes;
+              this.teacherFormConfig = { ...this.teacherFormConfig };
+              this.cdr.detectChanges();
             }
           }
         }
+      },
+      error: (err) => {
+        this.notify.error(err.error.message);
       }
     });
   }
 
   get totalTeachers(): number {
-    return this.allTeachers.length;
+    return this.totalTeachersCount;
   }
 
   public getTabCount(key: string): number {
@@ -151,90 +185,93 @@ export class Teachers implements OnInit {
   }
 
   public onFilterChange() {
-    this.applyFilters();
+    this.currentPage = 1;
+    this.fetchTeachers();
   }
 
   public onSearch() {
-    this.applyFilters();
+    this.currentPage = 1;
+    this.fetchTeachers();
+  }
+
+  public onPaginationChange(event: any) {
+    this.currentPage = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    this.fetchTeachers();
   }
 
   public onAddTeacher() {
     this.isFormVisible = !this.isFormVisible;
+    if (this.isFormVisible && this.teacherForm) {
+      this.teacherForm.resetForm();
+    }
   }
 
   public onFormSubmit(data: any) {
-    console.log('Teacher Form Data:', data);
 
     const payload = {
       role: 'teacher',
-      name: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
+      name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
       gender: data.gender ? data.gender.toLowerCase() : 'male',
       date_of_birth: data.dob,
       email: data.email,
+      phone: data.phone,
+      blood_group: data.blood_group,
+      photo: '',
       joining_date: new Date().toISOString(),
-      qualification: [
-        {
-          institue_name: data.qualification || 'N/A',
-          degree: 'N/A',
-          year: new Date().getFullYear(),
-          board: 'N/A'
-        }
-      ]
+      highest_qualification: data.highest_qualification,
+      experience: data.experience || 0,
+      class: data.class,
+      subject: data.subject,
+      guardians: data.guardians || [],
+      documents: data.documents || []
     };
 
-    if (!payload.name || !payload.date_of_birth || !payload.email) {
-      this.showMessage('Please fill all required fields properly');
-      return;
-    }
-
-    this.apiService.register(payload).subscribe({
+    this.apiService.admission(payload).subscribe({
       next: (res) => {
-        console.log('Registration success:', res);
-        this.showMessage('Teacher added successfully!');
-        if(this.teacherForm) this.teacherForm.resetForm();
+        this.notify.success(res.message);
+        if (this.teacherForm) this.teacherForm.resetForm();
         this.isFormVisible = false;
-        // Optionally fetch teachers again or add to list
+        this.fetchTeachers();
       },
       error: (err) => {
-        console.error('Registration failed:', err);
-        this.showMessage(err.error?.message || 'Failed to add teacher');
+        this.notify.error(err.error.message);
       }
     });
 
   }
 
-  private applyFilters() {
-    let filtered = [...this.allTeachers];
-
-    // Filter by class
-    if (this.selectedClass) {
-      filtered = filtered.filter(t => t.class === this.selectedClass);
-    }
-
-    // Filter by search query (name or ID)
-    if (this.searchQuery.trim()) {
-      const query = this.searchQuery.trim().toLowerCase();
-      filtered = filtered.filter(t =>
-        t.name.toLowerCase().includes(query) || t.id.toString().includes(query)
-      );
-    }
-
-    this.teachersDetails = {
-      ...this.teachersDetails,
-      dataSource: filtered
-    };
+  public onViewDetails(row: any) {
+    this.isFormVisible = true;
+    setTimeout(() => {
+      const names = row.name ? row.name.split(' ') : ['', ''];
+      const patchData = {
+        ...row,
+        first_name: row.first_name || names[0],
+        last_name: row.last_name || names.slice(1).join(' '),
+        dob: row.date_of_birth ? new Date(row.date_of_birth).toISOString().split('T')[0] : '',
+        joining_date: row.joining_date ? new Date(row.joining_date).toISOString().split('T')[0] : '',
+      };
+      if (this.teacherForm) {
+        this.teacherForm.setFormValue(patchData);
+      }
+    }, 100);
   }
 
-  public getCardColor(index: number) {
-    const cardColor = [
-      '#3e3eb5f2',
-      '#cf4242',
-      '#e1b44b',
-      '#075A6D',
-      '#F17404',
-      '#695845',
-      '#DE76D2'
-    ];
-    return cardColor[index % cardColor.length];
+  public onStatusToggle(event: any) {
+    const { row, value } = event;
+    const newStatus = value ? 'enable' : 'disable';
+
+    // this.apiService.updateTeacher(row._id, { status: newStatus }).subscribe({
+    //   next: (res: any) => {
+    //     this.notify.success(res.message || 'Status updated successfully');
+    //     this.fetchTeachers();
+    //   },
+    //   error: (err) => {
+    //     this.notify.error(err.error?.message || 'Error updating status');
+    //     this.fetchTeachers();
+    //   }
+    // });
   }
+
 }

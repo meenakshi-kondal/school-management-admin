@@ -8,15 +8,15 @@
 
     <div class="w-50 d-flex flex-column justify-content-center">
 
-      <h2 class="text-color text-center">Welcome</h2>
-      <p class="text-color text-center">Sign in to your admin account</p>
-      <label class="text-color mt-5">Email*</label>
+      <h2 class="text-color text-center"><b>Welcome</b></h2>
+      <p class="text-color text-center"><b>Sign in to your admin account</b></p>
+      <label class="text-color mt-5"><b>Email*</b></label>
       <input placeholder="Enter your email" [(ngModel)]="username" name="username" required>
 
-      <label class="text-color mt-4">Password*</label>
+      <label class="text-color mt-4"><b>Password*</b></label>
       <input type="password" placeholder="Enter your Password" [(ngModel)]="password" name="password" required>
 
-      <div class="forgot text-end">Forgot your password</div>
+      <div class="forgot text-end" [routerLink]="['/forgot-password']"><b>Forgot your password</b></div>
 
       <app-button [buttonData]="buttonData" (buttonHandler)="handleButtonClick($event)"></app-button>
 

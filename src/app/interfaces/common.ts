@@ -26,6 +26,7 @@ export interface TABLE {
   column: {
     key: string;
     name: string;
+    type?: string;
   }[];
   path: string;
   dataSource?: any[];
@@ -50,6 +51,9 @@ export interface FORM {
   title?: string;
   sections: {
     sectionTitle?: string;
+    sectionKey?: string;
+    repeatable?: boolean;
+    addButton?: boolean;
     fields: FORMFIELD[];
   }[];
   submitButton?: BUTTONDATA;

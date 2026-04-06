@@ -1,8 +1,8 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Form } from '../../sharedComponents/form/form';
 import { FORM } from '../../interfaces/common';
 import { ApiService } from '../../services/api.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-admission',
@@ -14,15 +14,54 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class Admission implements OnInit {
   @ViewChild(Form) admissionForm!: Form;
 
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  admissionFormConfig: FORM = {
+    sections: [
+      {
+        sectionTitle: 'Student Information',
+        fields: [
+          { key: 'first_name', label: 'First Name', type: 'text', required: true },
+          { key: 'last_name', label: 'Last Name', type: 'text' },
+          { key: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Other'], required: true },
+          { key: 'dob', label: 'Date of Birth', type: 'date', required: true },
+          { key: 'class_id', label: 'Admission Class', type: 'select', options: [], required: true },
+          { key: 'blood_group', label: 'Blood Group', type: 'select', options: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
+          { key: 'photo', label: 'Student Photo', type: 'file' },
+        ]
+      },
+      {
+        sectionTitle: 'Guardian Information',
+        sectionKey: 'guardians',
+        addButton: true,
+        fields: [
+          { key: 'relation', label: 'Relation', type: 'select', options: ['Father', 'Mother', 'Guardian', 'Other'], required: true },
+          { key: 'name', label: 'Name', type: 'text', required: true },
+          { key: 'email', label: 'Email ID', type: 'email' },
+          { key: 'phone', label: 'Phone Number', type: 'tel', required: true },
+          { key: 'occupation', label: 'Occupation', type: 'text' },
+          { key: 'aadhaar_card', label: 'Aadhar Card', type: 'file' }
+        ]
+      },
+      {
+        sectionTitle: 'Documents Upload',
+        sectionKey: 'documents',
+        addButton: true,
+        fields: [
+          { key: 'type', label: 'Document Tpye', type: 'select', options: ['Adhar Card', 'Birth Certificate', 'Migration/Report Card']},
+          { key: 'file', label: 'Upload File', type: 'file' },
+        ]
+      }
+    ],
+    submitButton: {
+      value: 'Submit Application',
+      type: 'primary',
+      icon: '<i class="fa-solid fa-paper-plane me-2"></i>'
+    }
+  };
 
-  private showMessage(message: string) {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top'
-    });
-  }
+  constructor(
+    private apiService: ApiService,
+    private notify: NotificationService,
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.fetchClasses();
@@ -35,97 +74,47 @@ export class Admission implements OnInit {
           const classOptions = res.data.map((c: any) => ({ label: c.class_name, value: c._id }));
           const studentSection = this.admissionFormConfig.sections.find(s => s.sectionTitle === 'Student Information');
           if (studentSection) {
-            const classField = studentSection.fields.find(f => f.key === 'admitClass');
+            const classField = studentSection.fields.find(f => f.key === 'class_id');
             if (classField) {
               classField.options = classOptions;
+              this.admissionFormConfig = { ...this.admissionFormConfig };
+              this.cdr.detectChanges();
             }
           }
         }
+      },
+      error: (err) => {
+        this.notify.error(err.error.message);
       }
     });
   }
 
-  admissionFormConfig: FORM = {
-    sections: [
-      {
-        sectionTitle: 'Student Information',
-        fields: [
-          { key: 'firstName', label: 'First Name', type: 'text', required: true, colSpan: 1 },
-          { key: 'lastName', label: 'Last Name', type: 'text', required: true, colSpan: 1 },
-          { key: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Other'], required: true, colSpan: 1 },
-          { key: 'dob', label: 'Date of Birth', type: 'date', required: true, colSpan: 1 },
-          { key: 'admitClass', label: 'Admission Class', type: 'select', options: ['Nursery', 'KG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], required: true, colSpan: 2 },
-          { key: 'photo', label: 'Student Photo', type: 'file', colSpan: 2 },
-          { key: 'birthCert', label: 'Birth Certificate', type: 'file', colSpan: 2 },
-        ]
-      },
-      {
-        sectionTitle: 'Guardian Information',
-        fields: [
-          { key: 'fatherName', label: 'Father Name', type: 'text', required: true, colSpan: 2 },
-          { key: 'motherName', label: 'Mother Name', type: 'text', required: true, colSpan: 2 },
-          { key: 'email', label: 'Email ID', type: 'email', required: true, colSpan: 2 },
-          { key: 'phone', label: 'Phone Number', type: 'tel', required: true, colSpan: 2 },
-          { key: 'address', label: 'Home Address', type: 'text', colSpan: 4 },
-        ]
-      },
-      {
-        sectionTitle: 'Documents Upload',
-        fields: [
-          { key: 'studentAadhar', label: 'Student Aadhar Card', type: 'file', colSpan: 2 },
-          { key: 'parentAadhar', label: 'Parent Aadhar Card', type: 'file', colSpan: 2 },
-          { key: 'reportCard', label: 'Prev. Class Report Card / Migration', type: 'file', colSpan: 2 },
-        ]
-      }
-    ],
-    submitButton: {
-      value: 'Submit Application',
-      type: 'primary',
-      icon: '<i class="fa-solid fa-paper-plane me-2"></i>'
-    }
-  };
-
   onFormSubmit(data: any) {
-    console.log('Admission Form Data:', data);
-
+    console.log(data)
     const payload = {
       role: 'student',
-      name: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
+      name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
       gender: data.gender ? data.gender.toLowerCase() : 'male',
       date_of_birth: data.dob,
-      email: data.email,
-      joining_date: new Date().toISOString(),
+      blood_group: data.blood_group,
+      photo: data.photo,
       class_id: data.admitClass,
-      parent_info: {
-        father_name: data.fatherName,
-        mother_name: data.motherName,
-        phone: data.phone,
-        address: data.address
-      },
-      documents: {
-        photo: '/assets/students.png',
-        birth_certificate: '',
-        aadhar_card: '',
-        parent_aadhar: '',
-        report_card: ''
-      },
-      is_bus_service: false
+      guardians: data.guardians || [],
+      documents: data.documents || []
     };
 
-    if (!payload.name || !payload.date_of_birth || !payload.email || !data.admitClass) {
-      this.showMessage('Please fill all required fields properly');
+    if (!payload.name || payload.guardians.length === 0 || payload.documents.length === 0) {
+      this.notify.info('Please fill all required fields properly');
       return;
     }
 
-    this.apiService.register(payload).subscribe({
+    this.apiService.admission(payload).subscribe({
       next: (res) => {
-        console.log('Registration success:', res);
-        this.showMessage('Student admitted successfully!');
-        if(this.admissionForm) this.admissionForm.resetForm();
+        this.notify.success(res.message);
+        if (this.admissionForm) this.admissionForm.resetForm();
       },
       error: (err) => {
-        console.error('Registration failed:', err);
-        this.showMessage(err.error?.message || 'Failed to admit student');
+        this.notify.error(err.error.message);
       }
     });
   }

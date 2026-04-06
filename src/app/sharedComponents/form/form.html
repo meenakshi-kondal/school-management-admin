@@ -1,25 +1,79 @@
-<div class="common-form p-4">
+<div class="form p-4">
     @if(formConfig.title) {
     <h2 class="mb-4">{{formConfig.title}}</h2>
     }
 
     <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()">
+
         @for(section of formConfig.sections; track section) {
-        <div class="form-section mb-5">
+        <div class="form__section mb-5">
             @if(section.sectionTitle) {
-            <h4 class="section-title mb-3">{{section.sectionTitle}}</h4>
+            <div class="d-flex form__section__heading">
+                <div class="form__section__heading__title">{{section.sectionTitle}}</div>
+
+                @if(section.addButton) {
+                <button type="button" class="form__section__heading__add" (click)="addSection(section)">(Add)</button>
+                }
+            </div>
             }
 
-            <div class="grid-4 gap-4">
+            @if(section.addButton) {
+            <div [formArrayName]="section.sectionKey || getSectionKey(section)">
+                @for(group of getSectionArray(section).controls; track group; let i = $index) {
+                <div [formGroupName]="i" class="border-bottom pb-4">
+                    @if(getSectionArray(section).length > 1) {
+                    <div class="d-flex justify-content-end mb-2">
+                        <button type="button" class="form__section__remove" (click)="removeSection(section, i)">Remove</button>
+                    </div>
+                    }
+                    <div class="form__section__grid gap-4 mt-2">
+                        @for(field of section.fields; track field.key) {
+                        <div [class]="'col-span-' + (field.colSpan || 1)">
+                            <label class="form-label">{{field.label}} @if(field.required){ <span class="text-danger">*</span>
+                                }</label>
+
+                            @if(field.type === 'select') {
+                            <select [formControlName]="field.key" class="form-control">
+                                <option value="">{{field.placeholder || 'Select'}}</option>
+                                @for(opt of field.options; track $index) {
+                                <option [value]="opt && $any(opt).value !== undefined ? $any(opt).value : opt">
+                                    {{$any(opt).label || opt}}
+                                </option>
+                                }
+                            </select>
+                            }
+                            @else if(field.type === 'file') {
+                            <input type="file" (change)="onFileChange($event, field.key, section, i)" class="form-control" />
+                            }
+                            @else {
+                            <input [type]="field.type" [formControlName]="field.key" [placeholder]="field.placeholder || ''"
+                                class="form-control" />
+                            }
+
+                             @if(group.get(field.key)?.touched && group.get(field.key)?.errors?.['required']) {
+                             <small class="text-danger">This field is required</small>
+                             }
+                             @if(group.get(field.key)?.touched && group.get(field.key)?.errors?.['email']) {
+                             <small class="text-danger">Please enter a valid email</small>
+                             }
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            } @else {
+            <div class="form__section__grid gap-4 mt-2">
                 @for(field of section.fields; track field.key) {
                 <div [class]="'col-span-' + (field.colSpan || 1)">
-                    <label class="form-label">{{field.label}} @if(field.required){ <span class="text-danger">*</span> }</label>
+                    <label class="form-label">{{field.label}} @if(field.required){ <span class="text-danger">*</span>
+                        }</label>
 
                     @if(field.type === 'select') {
                     <select [formControlName]="field.key" class="form-control">
                         <option value="">{{field.placeholder || 'Select'}}</option>
-                        @for(opt of field.options; track opt) {
-                        <option [value]="$any(opt).value !== undefined ? $any(opt).value : opt">
+                        @for(opt of field.options; track $index) {
+                        <option [value]="opt && $any(opt).value !== undefined ? $any(opt).value : opt">
                             {{$any(opt).label || opt}}
                         </option>
                         }
@@ -33,12 +87,16 @@
                         class="form-control" />
                     }
 
-                    @if(dynamicForm.get(field.key)?.touched && dynamicForm.get(field.key)?.invalid) {
-                    <small class="text-danger">This field is required</small>
-                    }
+                     @if(dynamicForm.get(field.key)?.touched && dynamicForm.get(field.key)?.errors?.['required']) {
+                     <small class="text-danger">This field is required</small>
+                     }
+                     @if(dynamicForm.get(field.key)?.touched && dynamicForm.get(field.key)?.errors?.['email']) {
+                     <small class="text-danger">Please enter a valid email</small>
+                     }
                 </div>
                 }
             </div>
+            }
         </div>
         }
 

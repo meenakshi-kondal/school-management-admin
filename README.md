@@ -1,45 +1,19 @@
 # School Management System
 
-This project contains a complete School Management System separated into a frontend (Angular) and a backend (Node.js/Express with MongoDB). 
+This project contains a complete School Management System frontend (Angular). 
 
 ## What We Created
 We implemented essential features for managing a school environment:
-1. **Frontend Integration (`management`)**: 
+1. **Frontend Integration**: 
    - An Angular-based UI for users to interact with.
    - An `ApiService` to handle HTTP requests securely.
    - An HTTP Interceptor to automatically attach JWT authorization tokens.
    - Dedicated components to handle forms, such as **Student Admission** and **Adding Teachers**.
    - A fully functional **Login Page** linked to the backend authentication API.
 
-2. **Backend API (`school-backend`)**:
-   - A Node.js backend running Express and connected to a MongoDB database.
-   - Registration APIs to add students and teachers.
-   - Login endpoints for authentication, securely issuing JSON Web Tokens (JWT).
-   - Dynamic user schemas using MongoDB discriminators allowing teachers, students, and admins to coexist smoothly.
-   - An auto-seeding mechanism to seamlessly create a default admin profile on boot.
-
 ## How to Run
 
-### 1. Running the Backend 🛠️
-
-Ensure you have your MongoDB instance running.
-
-1. Navigate to the backend directory:
-   ```bash
-   cd ../school-backend
-   ```
-2. Install the necessary dependencies (if you haven't yet):
-   ```bash
-   npm install
-   ```
-3. Start the development server (runs on `http://localhost:5000` by default):
-   ```bash
-   npm run dev
-   ```
-
-*(On a successful boot, the system ensures a connection to MongoDB and seeds the default admin account if necessary).*
-
-### 2. Running the Frontend 🌐
+### 1. Running the Frontend 🌐
 
 1. Navigate to the management directory:
    ```bash

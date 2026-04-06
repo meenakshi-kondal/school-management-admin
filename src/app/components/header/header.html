@@ -5,14 +5,16 @@
     </div>
 
     <div class="header__content d-flex">
-        <div class="header__content__notification d-flex align-items-center justify-content-center"><i
-                class="fa-regular fa-bell"></i></div>
+        <div class="header__content__notification d-flex align-items-center justify-content-center">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </div>
         <div class="header__content__chat d-flex align-items-center justify-content-center"><i
                 class="fa-regular fa-comments"></i></div>
-        <div class="header__content__profile d-flex align-items-center justify-content-center" (click)="onLogout()" style="cursor: pointer;">
-            <img src="/assets/profile.png" class="header__content__profile__image">
+        <div class="header__content__profile d-flex align-items-center justify-content-center" (click)="onLogout()"
+            style="cursor: pointer;">
             <span class="header__content__profile__name ms-2">
-                {{adminName}} <i class="fa-solid fa-right-from-bracket ms-2 text-danger"></i>
+                {{adminName}}
             </span>
         </div>
     </div>

@@ -1,63 +1,50 @@
 <div class="teachers">
     @if(!isFormVisible) {
-    <!-- Stats Tabs -->
-    <div class="teachers__stats d-flex gap-4">
+
+    <div class="cards d-flex gap-4">
         @for(tab of statsTabs; track tab.key; let i =$index) {
-        <div class="teachers__stats__tab d-flex align-items-center justify-content-between" 
-            [style.--card-color]="getCardColor(i+1)"
-            [class.active]="activeTab === tab.key">
-            <img [src]="tab.image" [alt]="tab.label" class="teachers__stats__tab__image">
-            <div class="teachers__stats__tab__info d-flex flex-column align-items-end text-color">
-                <div class="teachers__stats__tab__info__label">{{tab.label}}</div>
-                <div class="teachers__stats__tab__info__count">{{getTabCount(tab.key)}}</div>
+        <div class="tab d-flex align-items-center justify-content-between"
+            [style.--card-color]="service.getCardColor(i+1)" [class.active]="activeTab === tab.key">
+            <img [src]="tab.image" [alt]="tab.label" class="image">
+            <div class="info d-flex flex-column align-items-end text-color">
+                <div class="label">{{tab.label}}</div>
+                <div class="count">{{getTabCount(tab.key)}}</div>
             </div>
         </div>
         }
     </div>
 
     <!-- Filter Bar -->
-    <div class="teachers__filters d-flex align-items-center gap-3 mt-5">
-        <div class="teachers__filters__select">
-            <select [(ngModel)]="selectedClass" (change)="onFilterChange()">
-                <option value="">Select Class</option>
-                @for(cls of teachers_classes; track cls.class_name) {
-                <option [value]="cls.class_name">{{cls.class_name}}</option>
-                }
-            </select>
-        </div>
+    <div class="filters d-flex align-items-center gap-3 mt-5">
 
-        <div class="teachers__filters__select">
+        <div class="select">
             <select [(ngModel)]="selectedStatus" (change)="onFilterChange()">
                 <option value="">Status</option>
-                <option value="Present">Present</option>
-                <option value="Absent">Absent</option>
-                <option value="Leave">Leave</option>
+                <option value="enable">Enable</option>
+                <option value="disable">Disable</option>
             </select>
         </div>
 
-        <div class="teachers__filters__search">
+        <div class="search">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search by Name or ID..." [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+            <input type="text" placeholder="Search by Name or ID..." [(ngModel)]="searchQuery"
+                (keyup.enter)="onSearch()">
         </div>
 
-        <div class="teachers__filters__search-btn">
-            <app-button [buttonData]="searchButton" (buttonHandler)="onSearch()"></app-button>
-        </div>
-
-        <div class="teachers__filters__add-btn">
-            <app-button [buttonData]="addTeacherButton" (buttonHandler)="onAddTeacher()"></app-button>
-        </div>
+        <app-button [buttonData]="service.searchButton" (buttonHandler)="onSearch()"></app-button>
+        <app-button [buttonData]="addTeacherButton" (buttonHandler)="onAddTeacher()"></app-button>
     </div>
 
     <!-- Table -->
     <div class="teachers__table">
-        <app-table [tableContent]="teachersDetails"></app-table>
+        <app-table [tableContent]="teachersDetails" [totalLength]="totalTeachersCount"
+            (paginationChange)="onPaginationChange($event)" (toggleChange)="onStatusToggle($event)"
+            (view)="onViewDetails($event)">
+        </app-table>
     </div>
     } @else {
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <button class="btn btn-outline-secondary d-flex align-items-center gap-2" (click)="onAddTeacher()">
-            <i class="fa-solid fa-arrow-left"></i> Back to Teachers List
-        </button>
+        <app-button [buttonData]="service.backButtonDetail" (buttonHandler)="onAddTeacher()"></app-button>
     </div>
     <app-form [formConfig]="teacherFormConfig" (formSubmit)="onFormSubmit($event)"></app-form>
     }

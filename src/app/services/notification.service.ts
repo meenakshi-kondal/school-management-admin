@@ -11,25 +11,32 @@ export class NotificationService {
 
   
   config: MatSnackBarConfig = {
-    duration: 90000,
+    duration: 1000,
     horizontalPosition: 'center',
     verticalPosition: 'bottom'
   };
   constructor(private snackBar: MatSnackBar) { }
 
   success(message: string) {
-    this.config.panelClass = ['notification', 'success'];
-    this.snackBar.open(message, '', this.config);
+    this.snackBar.open(message, '', {
+      ...this.config,
+      panelClass: ['notification', 'success']
+    });
   }
 
   error(message: string) {
-    this.config.panelClass = ['notification', 'error'];
-    this.snackBar.open(message, '', this.config);
+    this.snackBar.open(message, '', {
+      ...this.config,
+      panelClass: ['notification', 'error']
+    });
   }
 
   info(message: string) {
-    this.config.panelClass = ['notification', 'info'];
-    this.snackBar.open(message, '', this.config);
+    this.snackBar.open(message, '', {
+      ...this.config,
+      panelClass: ['notification', 'info']
+    });
   }
+
 
 }

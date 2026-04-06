@@ -38,17 +38,14 @@
         <b>{{ col.name }}</b>
       </th>
       <td mat-cell *matCellDef="let row">
-        @if(col.key=== 'status') {
-        <div class="status d-flex gap-2">
-          <div class="present" [class.active]="row[col.key] === 'Present'">P</div>
-          <div class="absent" [class.active]="row[col.key] === 'Absent'">A</div>
-          <div class="leave" [class.active]="row[col.key] === 'Leave'">L</div>
-        </div>
-        } @else if (col.key === 'name' && row['photo']) {
+        @if (col.key === 'name' && row['photo']) {
         <div class="d-flex align-items-center gap-3">
           <img [src]="row['photo']" alt="" class="row-photo">
           <div class="name">{{row[col.key]}}</div>
         </div>
+        } @else if (col.type === 'toggle') {
+          <mat-slide-toggle color="primary" [checked]="row[col.key] === 'Active' || row[col.key] === 'Enable' || row[col.key] === 'enable' || row[col.key] === true" (change)="onToggle(row, col.key, $event)">
+          </mat-slide-toggle>
         } @else {
         {{ row[col.key] }}
         }

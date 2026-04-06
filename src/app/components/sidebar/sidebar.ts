@@ -14,6 +14,7 @@ export class Sidebar {
 		{ name: 'Students', path: '/admin/students', icon: 'fa-users' },
 		{ name: 'Classes', path: '/admin/classes', icon: 'fa-school' },
 		{ name: 'Admission', path: '/admin/admission', icon: 'fa-book' },
+		{ name: 'Timetable', path: '/admin/timetable', icon: 'fa-calendar-days' },
 	];
 	isSidebarOpen: Boolean = true;
 
